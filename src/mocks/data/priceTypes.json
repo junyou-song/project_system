@@ -1,0 +1,37 @@
+[
+  {
+    "id": "price-001",
+    "name": "单品",
+    "code": "DP",
+    "description": "单个产品的价格",
+    "isActive": true
+  },
+  {
+    "id": "price-002",
+    "name": "套餐",
+    "code": "TC",
+    "description": "产品套餐价格",
+    "isActive": true
+  },
+  {
+    "id": "price-003",
+    "name": "批发",
+    "code": "PF",
+    "description": "批发价格",
+    "isActive": true
+  },
+  {
+    "id": "price-004",
+    "name": "促销",
+    "code": "CX",
+    "description": "促销特价",
+    "isActive": true
+  },
+  {
+    "id": "price-005",
+    "name": "季节性",
+    "code": "JJX",
+    "description": "季节性调整价格",
+    "isActive": true
+  }
+] 

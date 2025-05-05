@@ -1,0 +1,37 @@
+[
+  {
+    "id": "budget-001",
+    "name": "营业部",
+    "code": "YYB",
+    "description": "营业部门预算",
+    "isActive": true
+  },
+  {
+    "id": "budget-002",
+    "name": "市场部",
+    "code": "SCB",
+    "description": "市场部门预算",
+    "isActive": true
+  },
+  {
+    "id": "budget-003",
+    "name": "销售部",
+    "code": "XSB",
+    "description": "销售部门预算",
+    "isActive": true
+  },
+  {
+    "id": "budget-004",
+    "name": "产品部",
+    "code": "CPB",
+    "description": "产品部门预算",
+    "isActive": true
+  },
+  {
+    "id": "budget-005",
+    "name": "研发部",
+    "code": "YFB",
+    "description": "研发部门预算",
+    "isActive": true
+  }
+] 

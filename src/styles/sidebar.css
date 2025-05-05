@@ -1,0 +1,206 @@
+/* === 基础菜单样式 === */
+.custom-sidebar-menu .ant-menu {
+  background: transparent; /* 透明背景 */
+  border-right: none !important; /* 移除右边框 */
+}
+
+/* === 菜单项 和 子菜单标题 通用样式 === */
+.custom-sidebar-menu .ant-menu-item,
+.custom-sidebar-menu .ant-menu-submenu-title {
+  height: 48px;
+  line-height: 48px;
+  margin: 8px 16px; /* 上下、左右外边距 */
+  padding: 0 16px; /* 左右内边距 */
+  border-radius: 10px; /* 圆角 */
+  transition: background-color 0.3s, color 0.3s; /* 过渡效果 */
+  color: #888888; /* 默认文字颜色 */
+  display: flex;
+  align-items: center;
+  overflow: hidden; /* 防止内容溢出 */
+}
+
+/* === 图标样式 === */
+.custom-sidebar-menu .ant-menu-item .anticon,
+.custom-sidebar-menu .ant-menu-submenu-title .anticon {
+  font-size: 18px;
+  min-width: 20px; /* 图标最小宽度 */
+  margin-right: 12px; /* 图标与文字间距 */
+  color: inherit; /* 继承父元素颜色 */
+  transition: color 0.3s, transform 0.3s; /* 过渡效果 */
+  position: relative; /* 用于图标背景定位 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === 文字样式 === */
+.custom-sidebar-menu .ant-menu-title-content {
+  color: inherit; /* 继承父元素颜色 */
+  font-weight: normal;
+  transition: color 0.3s, font-weight 0.3s; /* 过渡效果 */
+  white-space: nowrap; /* 防止文字换行 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 文字溢出显示省略号 */
+}
+
+/* === 悬停状态 (未选中项) === */
+.custom-sidebar-menu .ant-menu-item:not(.ant-menu-item-selected):not(.ant-menu-submenu-selected):hover,
+.custom-sidebar-menu .ant-menu-submenu-title:not(.ant-menu-item-selected):not(.ant-menu-submenu-selected):hover {
+  background-color: rgba(0, 0, 0, 0.03); /* 浅灰色背景 */
+  color: #333333; /* 深灰色文字 */
+}
+
+/* === 选中状态 === */
+.custom-sidebar-menu .ant-menu-item-selected,
+.custom-sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  background-color: transparent !important; /* 保持选中项背景透明 */
+  color: #111827 !important; /* 选中文本颜色 */
+  font-weight: 600 !important; /* 字体加粗 */
+}
+
+/* 选中状态 - 图标 */
+.custom-sidebar-menu .ant-menu-item-selected .anticon,
+.custom-sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .anticon {
+  color: white !important; /* 选中时图标白色 */
+  z-index: 1; /* 图标在背景之上 */
+  transform: scale(1.05); /* 让图标放大 10% */
+}
+
+/* 选中状态 - 图标背景 (浮动效果) */
+.custom-sidebar-menu .ant-menu-item-selected .anticon::after,
+.custom-sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .anticon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px; /* 背景宽度 */
+  height: 30px; /* 背景高度 */
+  background-color: #1677ff; /* Ant Design 蓝色 */
+  border-radius: 8px; /* 背景圆角 */
+  box-shadow: 0 4px 14px rgba(22, 119, 255, 0.25); /* 阴影 */
+  z-index: -1; /* 背景在图标之下 */
+  transition: all 0.3s; /* 过渡效果 */
+}
+
+/* === 子菜单特定样式 === */
+.custom-sidebar-menu .ant-menu-sub.ant-menu-inline {
+  background: transparent !important; /* 子菜单背景透明 */
+}
+
+/* 子菜单项缩进 */
+.custom-sidebar-menu .ant-menu-sub .ant-menu-item {
+  padding-left: 38px !important; 
+  margin: 4px 8px !important; /* 子菜单项上下、左右外边距 */
+  height: 40px; /* 子菜单项高度 */
+  line-height: 40px;
+}
+
+/* 子菜单项选中状态 */
+.custom-sidebar-menu .ant-menu-sub .ant-menu-item-selected {
+  color: #1677ff !important; /* 选中时蓝色文字 */
+  background-color: rgba(22, 119, 255, 0.08) !important; /* 选中时浅蓝色背景 */
+  font-weight: 600;
+}
+
+/* (可选) 移除选中子菜单项的图标背景 */
+.custom-sidebar-menu .ant-menu-sub .ant-menu-item-selected .anticon::after {
+  display: none;
+}
+
+/* === 子菜单箭头 === */
+.custom-sidebar-menu .ant-menu-submenu-arrow {
+  color: #bfbfbf; /* 默认箭头颜色 */
+  transition: color 0.3s, transform 0.3s; /* 过渡效果 */
+}
+
+/* 箭头悬停或展开时颜色 */
+.custom-sidebar-menu .ant-menu-submenu-title:hover .ant-menu-submenu-arrow,
+.custom-sidebar-menu .ant-menu-submenu-open .ant-menu-submenu-arrow {
+  color: #333; /* 深灰色箭头 */
+}
+
+/* === 收起状态样式 === */
+.custom-sidebar-menu .ant-menu-inline-collapsed {
+  width: 80px; /* 固定宽度 */
+}
+
+/* 收起时隐藏文字和箭头 */
+.custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-item .ant-menu-title-content,
+.custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title .ant-menu-title-content,
+.custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  display: none;
+}
+
+/* 收起时图标居中 */
+.custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-item,
+.custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title {
+  padding: 0 calc(50% - 10px) !important; /* (宽度80/2) - (图标20/2) = 30px */
+  margin: 8px auto !important; /* 上下外边距，左右自动居中 */
+}
+
+/* 收起时移除图标右边距 */
+.custom-sidebar-menu .ant-menu-inline-collapsed .anticon {
+  margin-right: 0 !important;
+}
+
+/* === 滚动条 === */
+.custom-sidebar-menu .ant-menu {
+  max-height: calc(100vh - 180px); /* 根据顶部Logo和底部用户区域高度调整 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent; /* Firefox */
+}
+
+.custom-sidebar-menu .ant-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-sidebar-menu .ant-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-sidebar-menu .ant-menu::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.custom-sidebar-menu .ant-menu::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* === 移除 Ant Design 默认样式 === */
+.custom-sidebar-menu .ant-menu-item::after { /* 移除默认选中指示器 */
+  display: none !important;
+}
+
+/* === 折叠按钮 === */
+.sidebar-collapse-button {
+    position: absolute !important; /* 使用 important 确保覆盖 */
+    top: 50%;
+    left: 100%; /* 定位到父容器的右边缘 */
+    transform: translate(-50%, -50%); /* 向左移动自身宽度的一半，垂直居中 */
+    z-index: 10; /* 确保在最上层 */
+    background-color: #fff; /* 白色背景 */
+    border: 1px solid #f0f0f0; /* 浅灰色边框 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 轻微阴影 */
+    width: 32px !important;  /* 按钮宽度 */
+    height: 32px !important; /* 按钮高度 */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important; /* 移除默认padding */
+}
+
+/* 针对圆形按钮的额外尺寸修正 (如果需要) */
+.sidebar-collapse-button.ant-btn-icon-only {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+/* 按钮内图标大小 */
+.sidebar-collapse-button .anticon {
+    font-size: 16px !important; /* 图标大小 */
+    margin-right: 0 !important; /* 移除图标可能继承的margin */
+} 

@@ -1,0 +1,240 @@
+[
+  {
+    "id": "model-001",
+    "name": "上新实木生态板 18mm",
+    "code": "SNB-ECO-18",
+    "corporationId": "corp-001",
+    "description": "E0级环保标准，双面三聚氰胺饰面，18毫米厚度。",
+    "isActive": true
+  },
+  {
+    "id": "model-002",
+    "name": "旭日阻燃密度板 15mm",
+    "code": "XRB-FRMDF-15",
+    "corporationId": "corp-002",
+    "description": "B1级阻燃高密度纤维板，适用于公共场所装修。",
+    "isActive": true
+  },
+  {
+    "id": "model-003",
+    "name": "胜利橡木指接板 AA级",
+    "code": "SLMY-OAKFJ-AA",
+    "corporationId": "corp-003",
+    "description": "进口橡木原料，AA级品质，适合家具制造。",
+    "isActive": true
+  },
+  {
+    "id": "model-004",
+    "name": "合创高强瓦楞纸箱 BC楞",
+    "code": "HCZY-CB-BC",
+    "corporationId": "corp-004",
+    "description": "五层BC楞，高抗压强度，适用于重物包装。",
+    "isActive": true
+  },
+  {
+    "id": "model-005",
+    "name": "先锋北欧风餐桌椅套装",
+    "code": "XFJJ-DTSET-NORDIC",
+    "corporationId": "corp-005",
+    "description": "简约北欧设计，一桌四椅组合 (已停产)",
+    "isActive": false
+  },
+  {
+    "id": "model-006",
+    "name": "上新多层实木复合板 12mm",
+    "code": "SNB-PLY-12",
+    "corporationId": "corp-001",
+    "isActive": true
+  },
+  {
+    "id": "model-007",
+    "name": "旭日PETG覆膜板 高光白",
+    "code": "XRB-PETG-HGW",
+    "corporationId": "corp-002",
+    "description": "表面PETG覆膜，高光泽白色，耐刮擦。",
+    "isActive": true
+  },
+  {
+    "id": "model-008",
+    "name": "胜利松木直拼板 20mm",
+    "code": "SLMY-PINEGP-20",
+    "corporationId": "corp-003",
+    "isActive": true
+  },
+  {
+    "id": "model-009",
+    "name": "合创环保牛皮纸袋",
+    "code": "HCZY-KPBAG-ECO",
+    "corporationId": "corp-004",
+    "description": "可回收牛皮纸材质，多种尺寸可选。",
+    "isActive": true
+  },
+  {
+    "id": "model-010",
+    "name": "旭日户外防腐木地板",
+    "code": "XRB-WPC-DECK",
+    "corporationId": "corp-002",
+    "description": "木塑复合材料，防水防腐，适用于户外平台。",
+    "isActive": false
+  },
+  {
+    "id": "model-011",
+    "name": "金鹰不锈钢门把手",
+    "code": "JYWJ-SSHdl-A01",
+    "corporationId": "corp-006",
+    "description": "304不锈钢材质，拉丝工艺，现代风格。",
+    "isActive": true
+  },
+  {
+    "id": "model-012",
+    "name": "金鹰铜合金水龙头",
+    "code": "JYWJ-BATap-B02",
+    "corporationId": "corp-006",
+    "description": "H59铜合金材质，表面镀铬，防锈耐用。",
+    "isActive": true
+  },
+  {
+    "id": "model-013",
+    "name": "华豪实木复合地板",
+    "code": "HHDB-ENGFlr-001",
+    "corporationId": "corp-007",
+    "description": "橡木面层，多层复合结构，适合地暖。",
+    "isActive": true
+  },
+  {
+    "id": "model-014",
+    "name": "华豪SPC锁扣地板",
+    "code": "HHDB-SPC-CL01",
+    "corporationId": "corp-007",
+    "description": "石塑复合材料，防水耐磨，安装便捷。",
+    "isActive": true
+  },
+  {
+    "id": "model-015",
+    "name": "星辉LED吸顶灯",
+    "code": "XHZM-LED-C240",
+    "corporationId": "corp-008",
+    "description": "24W功率，色温可调，简约现代风格。",
+    "isActive": true
+  },
+  {
+    "id": "model-016",
+    "name": "星辉智能灯带",
+    "code": "XHZM-SLED-5050",
+    "corporationId": "corp-008",
+    "description": "WiFi控制，RGB全彩，支持语音助手。",
+    "isActive": true
+  },
+  {
+    "id": "model-017",
+    "name": "永恒食品级保鲜盒",
+    "code": "YHSL-FCON-500",
+    "corporationId": "corp-009",
+    "description": "PP材质，食品级安全，微波炉可用。",
+    "isActive": true
+  },
+  {
+    "id": "model-018",
+    "name": "永恒工业塑料管道",
+    "code": "YHSL-PPR-32",
+    "corporationId": "corp-009",
+    "description": "PPR材质，耐高温，抗冲击，使用寿命长。",
+    "isActive": true
+  },
+  {
+    "id": "model-019",
+    "name": "富强热轧H型钢",
+    "code": "FQGC-HBEAM-200",
+    "corporationId": "corp-010",
+    "description": "Q235B材质，200×200mm规格，适用于建筑结构。",
+    "isActive": true
+  },
+  {
+    "id": "model-020",
+    "name": "富强镀锌钢管",
+    "code": "FQGC-GVPIPE-50",
+    "corporationId": "corp-010",
+    "description": "热镀锌表面处理，DN50规格，防腐蚀性强。",
+    "isActive": true
+  },
+  {
+    "id": "model-021",
+    "name": "明日变频冰箱",
+    "code": "MRJD-FRIDGE-251",
+    "corporationId": "corp-011",
+    "description": "251L容量，双门设计，变频节能，智能除霜。",
+    "isActive": true
+  },
+  {
+    "id": "model-022",
+    "name": "明日洗烘一体机",
+    "code": "MRJD-WASH-10KG",
+    "corporationId": "corp-011",
+    "description": "10kg洗涤容量，热泵烘干，智能投放。",
+    "isActive": true
+  },
+  {
+    "id": "model-023",
+    "name": "海泰大理石瓷砖",
+    "code": "HTTC-MRTILE-800",
+    "corporationId": "corp-012",
+    "description": "800×800mm规格，大理石纹理，釉面抛光。",
+    "isActive": true
+  },
+  {
+    "id": "model-024",
+    "name": "海泰木纹砖",
+    "code": "HTTC-WDTILE-150",
+    "corporationId": "corp-012",
+    "description": "150×900mm规格，仿实木纹理，防滑耐磨。",
+    "isActive": true
+  },
+  {
+    "id": "model-025",
+    "name": "宏达小型挖掘机",
+    "code": "HDJX-EXCAV-1.5",
+    "corporationId": "corp-013",
+    "description": "1.5吨级别，柴油发动机，履带式行走装置。",
+    "isActive": false
+  },
+  {
+    "id": "model-026",
+    "name": "宏达工程吊机",
+    "code": "HDJX-CRANE-5T",
+    "corporationId": "corp-013",
+    "description": "5吨起重能力，液压系统，360度旋转。",
+    "isActive": true
+  },
+  {
+    "id": "model-027",
+    "name": "绿洲自动灌溉系统",
+    "code": "LZYY-IRRIG-001",
+    "corporationId": "corp-014",
+    "description": "智能感应，定时控制，节水设计。",
+    "isActive": true
+  },
+  {
+    "id": "model-028",
+    "name": "绿洲草坪修剪机",
+    "code": "LZYY-MOWER-EL",
+    "corporationId": "corp-014",
+    "description": "电动无刷电机，40cm切割宽度，可调高度。",
+    "isActive": true
+  },
+  {
+    "id": "model-029",
+    "name": "博雅人体工学椅",
+    "code": "BYBG-CHAIR-ERG",
+    "corporationId": "corp-015",
+    "description": "网布靠背，可调节扶手，腰部支撑，舒适健康。",
+    "isActive": true
+  },
+  {
+    "id": "model-030",
+    "name": "博雅升降办公桌",
+    "code": "BYBG-DESK-LIFT",
+    "corporationId": "corp-015",
+    "description": "电动升降，记忆高度，防撞功能，稳定静音。",
+    "isActive": true
+  }
+]

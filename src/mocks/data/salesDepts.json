@@ -1,0 +1,37 @@
+[
+  {
+    "id": "sales-001",
+    "name": "Sell-In",
+    "code": "SI",
+    "description": "面向企业客户的销售",
+    "isActive": true
+  },
+  {
+    "id": "sales-002",
+    "name": "Sell-Out",
+    "code": "SO",
+    "description": "面向终端消费者的销售",
+    "isActive": true
+  },
+  {
+    "id": "sales-003",
+    "name": "直营",
+    "code": "ZY",
+    "description": "直营销售渠道",
+    "isActive": true
+  },
+  {
+    "id": "sales-004",
+    "name": "渠道",
+    "code": "QD",
+    "description": "合作渠道销售",
+    "isActive": true
+  },
+  {
+    "id": "sales-005",
+    "name": "电商",
+    "code": "DS",
+    "description": "电子商务销售",
+    "isActive": true
+  }
+] 

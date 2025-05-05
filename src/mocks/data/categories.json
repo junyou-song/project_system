@@ -1,0 +1,37 @@
+[
+  {
+    "id": "cat-001",
+    "name": "信誉对策",
+    "code": "XY",
+    "description": "提升客户信誉度的返利政策",
+    "isActive": true
+  },
+  {
+    "id": "cat-002",
+    "name": "销售促进",
+    "code": "XSCJ",
+    "description": "促进销售的返利政策",
+    "isActive": true
+  },
+  {
+    "id": "cat-003",
+    "name": "品牌推广",
+    "code": "PPTG",
+    "description": "品牌推广活动相关的返利",
+    "isActive": true
+  },
+  {
+    "id": "cat-004",
+    "name": "客户维护",
+    "code": "KHWH",
+    "description": "维护客户关系的返利政策",
+    "isActive": true
+  },
+  {
+    "id": "cat-005",
+    "name": "新品上市",
+    "code": "XPSS",
+    "description": "新产品上市促销的返利",
+    "isActive": true
+  }
+] 

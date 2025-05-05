@@ -1,0 +1,92 @@
+[
+  {
+    "id": "corp-001",
+    "name": "上新板",
+    "code": "SNB",
+    "isActive": true
+  },
+  {
+    "id": "corp-002",
+    "name": "旭日板材",
+    "code": "XRB",
+    "isActive": true
+  },
+  {
+    "id": "corp-003",
+    "name": "胜利木业",
+    "code": "SLMY",
+    "isActive": true
+  },
+  {
+    "id": "corp-004",
+    "name": "合创纸业",
+    "code": "HCZY",
+    "isActive": true
+  },
+  {
+    "id": "corp-005",
+    "name": "先锋家居",
+    "code": "XFJJ",
+    "isActive": false
+  },
+  {
+    "id": "corp-006",
+    "name": "金鹰五金",
+    "code": "JYWJ",
+    "isActive": true
+  },
+  {
+    "id": "corp-007",
+    "name": "华豪地板",
+    "code": "HHDB",
+    "isActive": true
+  },
+  {
+    "id": "corp-008",
+    "name": "星辉照明",
+    "code": "XHZM",
+    "isActive": true
+  },
+  {
+    "id": "corp-009",
+    "name": "永恒塑料",
+    "code": "YHSL",
+    "isActive": true
+  },
+  {
+    "id": "corp-010",
+    "name": "富强钢材",
+    "code": "FQGC",
+    "isActive": true
+  },
+  {
+    "id": "corp-011",
+    "name": "明日家电",
+    "code": "MRJD",
+    "isActive": true
+  },
+  {
+    "id": "corp-012",
+    "name": "海泰陶瓷",
+    "code": "HTTC",
+    "isActive": true
+  },
+  {
+    "id": "corp-013",
+    "name": "宏达机械",
+    "code": "HDJX",
+    "isActive": false
+  },
+  {
+    "id": "corp-014",
+    "name": "绿洲园艺",
+    "code": "LZYY",
+    "isActive": true
+  },
+  {
+    "id": "corp-015",
+    "name": "博雅办公",
+    "code": "BYBG",
+    "isActive": true
+  }
+] 
