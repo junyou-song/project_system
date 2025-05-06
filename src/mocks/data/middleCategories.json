@@ -4,195 +4,543 @@
     "name": "实木板",
     "code": "SMB",
     "bigCategoryId": "big-001",
-    "description": "实木生态板类产品"
+    "description": "实木生态板类产品",
+    "isActive": true
   },
   {
     "id": "mid-002",
     "name": "密度板",
     "code": "MDB",
     "bigCategoryId": "big-001",
-    "description": "中高密度纤维板产品"
+    "description": "中高密度纤维板产品",
+    "isActive": true
   },
   {
     "id": "mid-003",
     "name": "覆膜板",
     "code": "FMB",
     "bigCategoryId": "big-002",
-    "description": "表面覆膜处理的装饰板材"
+    "description": "表面覆膜处理的装饰板材",
+    "isActive": true
   },
   {
     "id": "mid-004",
     "name": "橡木制品",
     "code": "XMZP",
     "bigCategoryId": "big-003",
-    "description": "橡木材质的木制品"
+    "description": "橡木材质的木制品",
+    "isActive": true
   },
   {
     "id": "mid-005",
     "name": "松木制品",
     "code": "SMZP",
     "bigCategoryId": "big-003",
-    "description": "松木材质的木制品"
+    "description": "松木材质的木制品",
+    "isActive": true
   },
   {
     "id": "mid-006",
     "name": "纸箱",
     "code": "ZX",
     "bigCategoryId": "big-004",
-    "description": "各类瓦楞纸箱包装"
+    "description": "各类瓦楞纸箱包装",
+    "isActive": true
   },
   {
     "id": "mid-007",
     "name": "纸袋",
     "code": "ZD",
     "bigCategoryId": "big-004",
-    "description": "各类纸质包装袋"
+    "description": "各类纸质包装袋",
+    "isActive": true
   },
   {
     "id": "mid-008",
     "name": "家居套装",
     "code": "JJTZ",
     "bigCategoryId": "big-005",
-    "description": "成套家居产品"
+    "description": "成套家居产品",
+    "isActive": true
   },
   {
     "id": "mid-009",
     "name": "门把手",
     "code": "MBS",
     "bigCategoryId": "big-006",
-    "description": "门用把手类五金"
+    "description": "门用把手类五金",
+    "isActive": true
   },
   {
     "id": "mid-010",
     "name": "水龙头",
     "code": "SLT",
     "bigCategoryId": "big-006",
-    "description": "各类水龙头五金"
+    "description": "各类水龙头五金",
+    "isActive": true
   },
   {
     "id": "mid-011",
     "name": "复合地板",
     "code": "FHDB",
     "bigCategoryId": "big-007",
-    "description": "实木复合地板产品"
+    "description": "实木复合地板产品",
+    "isActive": true
   },
   {
     "id": "mid-012",
     "name": "SPC地板",
     "code": "SPCDB",
     "bigCategoryId": "big-007",
-    "description": "石塑锁扣地板产品"
+    "description": "石塑锁扣地板产品",
+    "isActive": true
   },
   {
     "id": "mid-013",
     "name": "LED灯具",
     "code": "LEDDJ",
     "bigCategoryId": "big-008",
-    "description": "LED技术照明产品"
+    "description": "LED技术照明产品",
+    "isActive": true
   },
   {
     "id": "mid-014",
     "name": "灯带",
     "code": "DD",
     "bigCategoryId": "big-008",
-    "description": "各类装饰灯带产品"
+    "description": "各类装饰灯带产品",
+    "isActive": true
   },
   {
     "id": "mid-015",
     "name": "家居塑料",
     "code": "JJSL",
     "bigCategoryId": "big-009",
-    "description": "家居用塑料制品"
+    "description": "家居用塑料制品",
+    "isActive": true
   },
   {
     "id": "mid-016",
     "name": "工业塑料",
     "code": "GYSL",
     "bigCategoryId": "big-009",
-    "description": "工业用塑料制品"
+    "description": "工业用塑料制品",
+    "isActive": true
   },
   {
     "id": "mid-017",
     "name": "型钢",
     "code": "XG",
     "bigCategoryId": "big-010",
-    "description": "各类型钢产品"
+    "description": "各类型钢产品",
+    "isActive": true
   },
   {
     "id": "mid-018",
     "name": "钢管",
     "code": "GG",
     "bigCategoryId": "big-010",
-    "description": "各类钢管产品"
+    "description": "各类钢管产品",
+    "isActive": true
   },
   {
     "id": "mid-019",
     "name": "冰箱",
     "code": "BX",
     "bigCategoryId": "big-011",
-    "description": "家用电冰箱产品"
+    "description": "家用电冰箱产品",
+    "isActive": true
   },
   {
     "id": "mid-020",
     "name": "洗衣机",
     "code": "XYJ",
     "bigCategoryId": "big-011",
-    "description": "家用洗衣机产品"
+    "description": "家用洗衣机产品",
+    "isActive": true
   },
   {
     "id": "mid-021",
     "name": "大理石瓷砖",
     "code": "DLSCZ",
     "bigCategoryId": "big-012",
-    "description": "大理石纹理瓷砖"
+    "description": "大理石纹理瓷砖",
+    "isActive": true
   },
   {
     "id": "mid-022",
     "name": "木纹砖",
     "code": "MWZ",
     "bigCategoryId": "big-012",
-    "description": "木纹理瓷砖"
+    "description": "木纹理瓷砖",
+    "isActive": true
   },
   {
     "id": "mid-023",
     "name": "挖掘机",
     "code": "WJJ",
     "bigCategoryId": "big-013",
-    "description": "各类挖掘机设备"
+    "description": "各类挖掘机设备",
+    "isActive": true
   },
   {
     "id": "mid-024",
     "name": "吊机",
     "code": "DJ",
     "bigCategoryId": "big-013",
-    "description": "各类吊机设备"
+    "description": "各类吊机设备",
+    "isActive": true
   },
   {
     "id": "mid-025",
     "name": "灌溉系统",
     "code": "GXXT",
     "bigCategoryId": "big-014",
-    "description": "园艺灌溉设备"
+    "description": "园艺灌溉设备",
+    "isActive": true
   },
   {
     "id": "mid-026",
     "name": "草坪设备",
     "code": "CPSB",
     "bigCategoryId": "big-014",
-    "description": "草坪维护设备"
+    "description": "草坪维护设备",
+    "isActive": true
   },
   {
     "id": "mid-027",
     "name": "办公椅",
     "code": "BGY",
     "bigCategoryId": "big-015",
-    "description": "各类办公座椅"
+    "description": "各类办公座椅",
+    "isActive": true
   },
   {
     "id": "mid-028",
     "name": "办公桌",
     "code": "BGZ",
     "bigCategoryId": "big-015",
-    "description": "各类办公桌"
+    "description": "各类办公桌",
+    "isActive": true
+  },
+  {
+    "id": "mid-029",
+    "name": "多层板",
+    "code": "DCB",
+    "bigCategoryId": "big-001",
+    "description": "多层胶合板材",
+    "isActive": true
+  },
+  {
+    "id": "mid-030",
+    "name": "贴面板",
+    "code": "TMB",
+    "bigCategoryId": "big-002",
+    "description": "装饰贴面板材",
+    "isActive": true
+  },
+  {
+    "id": "mid-031",
+    "name": "壁纸壁布",
+    "code": "BZBB",
+    "bigCategoryId": "big-002",
+    "description": "各类墙面装饰壁纸壁布",
+    "isActive": true
+  },
+  {
+    "id": "mid-032",
+    "name": "胶合板",
+    "code": "JHB",
+    "bigCategoryId": "big-003",
+    "description": "多层胶合木质板材",
+    "isActive": true
+  },
+  {
+    "id": "mid-033",
+    "name": "纸盒",
+    "code": "ZH",
+    "bigCategoryId": "big-004",
+    "description": "各类纸质包装盒",
+    "isActive": true
+  },
+  {
+    "id": "mid-034",
+    "name": "沙发",
+    "code": "SF",
+    "bigCategoryId": "big-005",
+    "description": "各类客厅沙发",
+    "isActive": true
+  },
+  {
+    "id": "mid-035",
+    "name": "餐桌椅",
+    "code": "CZY",
+    "bigCategoryId": "big-005",
+    "description": "餐厅桌椅套装",
+    "isActive": true
+  },
+  {
+    "id": "mid-036",
+    "name": "合页铰链",
+    "code": "HYJL",
+    "bigCategoryId": "big-006",
+    "description": "门窗柜用合页铰链",
+    "isActive": true
+  },
+  {
+    "id": "mid-037",
+    "name": "瓷砖地板",
+    "code": "CZDB",
+    "bigCategoryId": "big-007",
+    "description": "陶瓷地砖地板",
+    "isActive": true
+  },
+  {
+    "id": "mid-038",
+    "name": "落地灯",
+    "code": "LDD",
+    "bigCategoryId": "big-008",
+    "description": "客厅卧室落地灯",
+    "isActive": true
+  },
+  {
+    "id": "mid-039",
+    "name": "壁灯",
+    "code": "BD",
+    "bigCategoryId": "big-008",
+    "description": "墙壁安装照明灯具",
+    "isActive": true
+  },
+  {
+    "id": "mid-040",
+    "name": "厨房塑料",
+    "code": "CFSL",
+    "bigCategoryId": "big-009",
+    "description": "厨房用塑料制品",
+    "isActive": true
+  },
+  {
+    "id": "mid-041",
+    "name": "钢板",
+    "code": "GB",
+    "bigCategoryId": "big-010",
+    "description": "各类钢板材料",
+    "isActive": true
+  },
+  {
+    "id": "mid-042",
+    "name": "电视机",
+    "code": "DSJ",
+    "bigCategoryId": "big-011",
+    "description": "各类电视机产品",
+    "isActive": true
+  },
+  {
+    "id": "mid-043",
+    "name": "空调",
+    "code": "KT",
+    "bigCategoryId": "big-011",
+    "description": "家用空调设备",
+    "isActive": true
+  },
+  {
+    "id": "mid-044",
+    "name": "仿古砖",
+    "code": "FGZ",
+    "bigCategoryId": "big-012",
+    "description": "仿古风格瓷砖",
+    "isActive": true
+  },
+  {
+    "id": "mid-045",
+    "name": "装载机",
+    "code": "ZZJ",
+    "bigCategoryId": "big-013",
+    "description": "工程装载机械",
+    "isActive": true
+  },
+  {
+    "id": "mid-046",
+    "name": "园艺工具",
+    "code": "YYGJ",
+    "bigCategoryId": "big-014",
+    "description": "园艺手动工具",
+    "isActive": true
+  },
+  {
+    "id": "mid-047",
+    "name": "文件柜",
+    "code": "WJG",
+    "bigCategoryId": "big-015",
+    "description": "办公文件存储柜",
+    "isActive": true
+  },
+  {
+    "id": "mid-048",
+    "name": "电阻元件",
+    "code": "DZYJ",
+    "bigCategoryId": "big-016",
+    "description": "各类电阻元件",
+    "isActive": true
+  },
+  {
+    "id": "mid-049",
+    "name": "电容元件",
+    "code": "DRYJ",
+    "bigCategoryId": "big-016",
+    "description": "各类电容元件",
+    "isActive": true
+  },
+  {
+    "id": "mid-050",
+    "name": "半导体元件",
+    "code": "BDTYJ",
+    "bigCategoryId": "big-016",
+    "description": "晶体管、二极管等",
+    "isActive": true
+  },
+  {
+    "id": "mid-051",
+    "name": "监控摄像头",
+    "code": "JKSXT",
+    "bigCategoryId": "big-017",
+    "description": "各类安防监控摄像设备",
+    "isActive": true
+  },
+  {
+    "id": "mid-052",
+    "name": "报警器",
+    "code": "BJQ",
+    "bigCategoryId": "big-017",
+    "description": "安防报警设备",
+    "isActive": true
+  },
+  {
+    "id": "mid-053",
+    "name": "锅具",
+    "code": "GJ",
+    "bigCategoryId": "big-018",
+    "description": "各类烹饪锅具",
+    "isActive": true
+  },
+  {
+    "id": "mid-054",
+    "name": "厨房小家电",
+    "code": "CFXJD",
+    "bigCategoryId": "big-018",
+    "description": "料理机、榨汁机等厨房电器",
+    "isActive": true
+  },
+  {
+    "id": "mid-055",
+    "name": "电钻",
+    "code": "DZ",
+    "bigCategoryId": "big-019",
+    "description": "手持式电钻工具",
+    "isActive": true
+  },
+  {
+    "id": "mid-056",
+    "name": "电锯",
+    "code": "DJ",
+    "bigCategoryId": "big-019",
+    "description": "电动切割锯",
+    "isActive": true
+  },
+  {
+    "id": "mid-057",
+    "name": "水泥",
+    "code": "SN",
+    "bigCategoryId": "big-020",
+    "description": "各类水泥产品",
+    "isActive": true
+  },
+  {
+    "id": "mid-058",
+    "name": "混凝土",
+    "code": "HNT",
+    "bigCategoryId": "big-020",
+    "description": "预拌混凝土",
+    "isActive": true
+  },
+  {
+    "id": "mid-059",
+    "name": "马桶",
+    "code": "MT",
+    "bigCategoryId": "big-021",
+    "description": "座便器、蹲便器等",
+    "isActive": true
+  },
+  {
+    "id": "mid-060",
+    "name": "浴缸",
+    "code": "YG",
+    "bigCategoryId": "big-021",
+    "description": "各类浴缸产品",
+    "isActive": true
+  },
+  {
+    "id": "mid-061",
+    "name": "电力电缆",
+    "code": "DLDL",
+    "bigCategoryId": "big-022",
+    "description": "电力传输用电缆",
+    "isActive": true
+  },
+  {
+    "id": "mid-062",
+    "name": "通信电缆",
+    "code": "TXDL",
+    "bigCategoryId": "big-022",
+    "description": "通信信号传输电缆",
+    "isActive": true
+  },
+  {
+    "id": "mid-063",
+    "name": "电暖气",
+    "code": "DNQ",
+    "bigCategoryId": "big-023",
+    "description": "电热式取暖器",
+    "isActive": true
+  },
+  {
+    "id": "mid-064",
+    "name": "燃气热水器",
+    "code": "RQRSQ",
+    "bigCategoryId": "big-023",
+    "description": "燃气式热水器",
+    "isActive": true
+  },
+  {
+    "id": "mid-065",
+    "name": "排气扇",
+    "code": "PQS",
+    "bigCategoryId": "big-024",
+    "description": "卫生间厨房排气扇",
+    "isActive": true
+  },
+  {
+    "id": "mid-066",
+    "name": "换气机",
+    "code": "HQJ",
+    "bigCategoryId": "big-024",
+    "description": "全屋新风换气系统",
+    "isActive": true
+  },
+  {
+    "id": "mid-067",
+    "name": "净水器",
+    "code": "JSQ",
+    "bigCategoryId": "big-025",
+    "description": "家用净水过滤设备",
+    "isActive": true
+  },
+  {
+    "id": "mid-068",
+    "name": "软水机",
+    "code": "RSJ",
+    "bigCategoryId": "big-025",
+    "description": "水质软化处理设备",
+    "isActive": true
   }
 ]

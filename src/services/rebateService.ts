@@ -226,15 +226,15 @@ export const rebateService = {
    * 获取大分类列表 (统一入口)
    * @param corporationId - 法人 ID，用于筛选大分类列表
    */
-  async getbigCategories(params?: { corporationId?: string; isActive?: boolean }): Promise<BigCategory[]> {
+  async getBigCategories(params?: { corporationId?: string; isActive?: boolean }): Promise<BigCategory[]> {
       return this._fetchList<BigCategory>('/bigCategories', params || {}, '大分类数据');
   },
 
     /**
    * 获取中分类列表 (统一入口)
-   * @param corporationId - 法人 ID，用于筛选中分类列表
+   * @param bigCategoryId - 大分类 ID，用于筛选中分类列表
    */
-    async getmiddleCategories(params?: { bigCategoryId?: string; isActive?: boolean }): Promise<MiddleCategory[]> {
+    async getMiddleCategories(params?: { bigCategoryId?: string; isActive?: boolean }): Promise<MiddleCategory[]> {
       return this._fetchList<MiddleCategory>('/middleCategories', params || {}, '中分类数据');
   },
 

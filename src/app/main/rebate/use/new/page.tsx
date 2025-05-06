@@ -14,7 +14,9 @@ import {
   InputNumber,
   Space,
   message,
-  App
+  App,
+  Modal,
+  Spin
 } from 'antd';
 import { 
   ImportOutlined,
@@ -38,7 +40,9 @@ import {
   PriceType, 
   Model,
   CreateRebateRequest,
-  RebateStatus
+  RebateStatus,
+  BigCategory,
+  MiddleCategory
 } from '@/types/Rebate/rebate';
 import { useNavigation } from '@/hooks/useNavigation';
 
@@ -46,13 +50,22 @@ const { Title, Paragraph } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
+// 申请类型选项
+const APPLICATION_TYPES = [
+  { id: 'app-001', name: '单价申请', description: '按单价计算的返利' },
+  { id: 'app-002', name: '返利率申请', description: '按返利率计算的返利' }
+];
+
 // 表格行项数据类型
 interface RebateItem {
   key: string;
+  bigCategoryId: string;
+  middleCategoryId: string;
   modelId: string;
   priceTypeId: string;
   price: number;
   quantity: number;
+  applicationTypeId: string; // 新增申请类型ID字段
   rebatePrice: number;
   rebateRate: number;
   rebateAmount: number;
@@ -62,14 +75,20 @@ interface RebateItem {
 // 主组件
 function RebateNewPage() {
   const { message } = App.useApp();
-  const router = useRouter();
   const [form] = Form.useForm();
+  const [itemForm] = Form.useForm(); // 添加明细表单
   const { navigateTo, navigateWithConfirm, goBack } = useNavigation();
 
   // 状态
   const [submitLoading, setSubmitLoading] = useState(false);
   const [draftLoading, setDraftLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
+  
+  // 弹窗状态
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [editingKey, setEditingKey] = useState<string>('');
+  const [selectedItemType, setSelectedItemType] = useState<string>('app-001'); // 默认单价申请
   
   // 表单是否被修改标记
   const [formModified, setFormModified] = useState(false);
@@ -81,6 +100,8 @@ function RebateNewPage() {
   const [budgetDepts, setBudgetDepts] = useState<BudgetDept[]>([]);
   const [priceTypes, setPriceTypes] = useState<PriceType[]>([]);
   const [models, setModels] = useState<Model[]>([]);
+  const [bigCategories, setBigCategories] = useState<BigCategory[]>([]);
+  const [middleCategories, setMiddleCategories] = useState<MiddleCategory[]>([]);
 
   // 表格数据
   const [tableData, setTableData] = useState<RebateItem[]>([]);
@@ -88,6 +109,10 @@ function RebateNewPage() {
 
   // 当前选择的法人ID
   const [selectedCorporationId, setSelectedCorporationId] = useState<string | undefined>(undefined);
+  // 当前选择的大分类ID
+  const [selectedBigCategoryId, setSelectedBigCategoryId] = useState<string | undefined>(undefined);
+  // 当前选择的中分类ID
+  const [selectedMiddleCategoryId, setSelectedMiddleCategoryId] = useState<string | undefined>(undefined);
   
   // 加载下拉选项数据
   useEffect(() => {
@@ -119,56 +144,169 @@ function RebateNewPage() {
     loadLookupData();
   }, [message]);
 
-  // 当法人选择变化时加载相应的型号数据
+  // 当法人选择变化时加载相应的型号数据和大分类数据
   useEffect(() => {
-    const loadModelData = async () => {
+    const loadRelatedData = async () => {
       if (!selectedCorporationId) {
         setModels([]);
+        setBigCategories([]);
         return;
       }
       
       try {
-        const modelsData = await rebateService.getModels({
-          corporationId: selectedCorporationId,
-          isActive: true
-        });
+        // 同时获取型号数据和大分类数据
+        const [modelsData, bigCategoriesData] = await Promise.all([
+          rebateService.getModels({
+            corporationId: selectedCorporationId,
+            isActive: true
+          }),
+          rebateService.getBigCategories({
+            corporationId: selectedCorporationId,
+            isActive: true
+          })
+        ]);
+        
         setModels(modelsData);
+        setBigCategories(bigCategoriesData);
       } catch (error) {
-        console.error('加载型号数据失败:', error);
-        message.error('加载型号数据失败');
+        console.error('加载关联数据失败:', error);
+        message.error('加载关联数据失败');
       }
     };
     
-    loadModelData();
+    loadRelatedData();
   }, [selectedCorporationId, message]);
+
+  // 当大分类选择变化时加载相应的中分类数据
+  useEffect(() => {
+    const loadMiddleCategories = async () => {
+      if (!selectedBigCategoryId) {
+        setMiddleCategories([]);
+        setSelectedMiddleCategoryId(undefined); // 重置中分类选择
+        console.log('没有选择大分类，清空中分类数据');
+        return;
+      }
+      
+      console.log('开始加载中分类数据，大分类ID:', selectedBigCategoryId);
+      try {
+        const middleCategoriesData = await rebateService.getMiddleCategories({
+          bigCategoryId: selectedBigCategoryId,
+          isActive: true
+        });
+        
+        console.log('获取到中分类数据:', middleCategoriesData);
+        setMiddleCategories(middleCategoriesData);
+      } catch (error) {
+        console.error('加载中分类数据失败:', error);
+        message.error('加载中分类数据失败');
+      }
+    };
+    
+    loadMiddleCategories();
+  }, [selectedBigCategoryId, message]);
 
   // 处理表单字段值变化
   const handleFormValuesChange = (changedValues: any) => {
     // 当法人ID变化时更新状态
     if ('corporationId' in changedValues) {
       setSelectedCorporationId(changedValues.corporationId);
+      // 清空大分类和中分类选择
+      form.setFieldsValue({ bigCategoryId: undefined, middleCategoryId: undefined });
+      setSelectedBigCategoryId(undefined);
+      setSelectedMiddleCategoryId(undefined);
     }
     
     // 标记表单已被修改
     setFormModified(true);
   };
 
-  // 添加表格行
-  const handleAddRow = () => {
-    const newKey = `item-${Date.now()}`;
-    const newRow: RebateItem = {
-      key: newKey,
-      modelId: '',
-      priceTypeId: '',
-      price: 0,
-      quantity: 0,
-      rebatePrice: 0,
-      rebateRate: 0,
-      rebateAmount: 0,
-      comment: ''
-    };
+  // 计算返利金额
+  const calculateRebateAmount = (values: any) => {
+    const { applicationTypeId, price, quantity, rebatePrice, rebateRate } = values;
+    let calculatedAmount = 0;
     
-    setTableData([...tableData, newRow]);
+    if (applicationTypeId === 'app-001' && typeof rebatePrice === 'number' && rebatePrice > 0) {
+      // 单价申请: 返利金额 = 返利单价 × 数量
+      calculatedAmount = rebatePrice * quantity;
+    } else if (applicationTypeId === 'app-002' && typeof rebateRate === 'number' && rebateRate > 0) {
+      // 返利率申请: 返利金额 = 价格 × 数量 × 返利率/100
+      calculatedAmount = price * quantity * (rebateRate / 100);
+    }
+    
+    // 保留两位小数
+    return Math.round(calculatedAmount * 100) / 100;
+  };
+
+  // 处理弹窗表单提交
+  const handleModalSubmit = async () => {
+    try {
+      setModalLoading(true);
+      
+      // 验证表单
+      const values = await itemForm.validateFields();
+      
+      // 处理返利金额计算
+      const newValues = {
+        ...values,
+        price: 1, // 暂时写死为1
+      };
+      
+      const rebateAmount = calculateRebateAmount(newValues);
+      
+      // 创建新的数据项
+      const newItem: RebateItem = {
+        key: editingKey || `item-${Date.now()}`,
+        bigCategoryId: values.bigCategoryId,
+        middleCategoryId: values.middleCategoryId,
+        modelId: values.modelId,
+        priceTypeId: values.priceTypeId,
+        price: 1, // 暂时写死为1
+        quantity: values.quantity,
+        applicationTypeId: values.applicationTypeId,
+        rebatePrice: values.applicationTypeId === 'app-001' ? values.rebatePrice : 0,
+        rebateRate: values.applicationTypeId === 'app-002' ? values.rebateRate : 0,
+        rebateAmount: rebateAmount,
+        comment: values.comment
+      };
+      
+      if (editingKey) {
+        // 更新现有项目
+        setTableData(tableData.map(item => item.key === editingKey ? newItem : item));
+      } else {
+        // 添加新项目
+        setTableData([...tableData, newItem]);
+      }
+      
+      setModalVisible(false);
+      setEditingKey('');
+      setFormModified(true);
+    } catch (error) {
+      console.error('表单验证失败:', error);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  // 处理弹窗中申请类型变更
+  const handleApplicationTypeChange = (value: string) => {
+    setSelectedItemType(value);
+  };
+
+  // 添加表格行 - 现在改为打开弹窗
+  const handleAddRow = async () => {
+    try {
+      // 先验证基本信息表单是否填写完整
+      await form.validateFields();
+      
+      // 基本信息验证通过，打开弹窗
+      showItemModal();
+    } catch (error) {
+      // 基本信息验证失败，显示错误信息
+      console.error('基本信息验证失败:', error);
+      message.error('请先完成基本信息的必填项');
+      
+      // 表单验证会自动让未填写的必填字段显示红色边框
+    }
   };
 
   // 删除选中的表格行
@@ -176,88 +314,108 @@ function RebateNewPage() {
     const newData = tableData.filter(item => !selectedRowKeys.includes(item.key));
     setTableData(newData);
     setSelectedRowKeys([]);
+    setFormModified(true);
   };
 
-  // 计算返利金额
-  const calculateRebateAmount = (record: RebateItem, field: string, value: any) => {
-    let updatedRecord = { ...record };
+  // 编辑表格行
+  const handleEditRow = (record: RebateItem) => {
+    showItemModal(record);
+  };
+
+  // 打开添加/编辑明细弹窗
+  const showItemModal = (record?: RebateItem) => {
+    itemForm.resetFields();
     
-    switch (field) {
-      case 'price':
-        updatedRecord.price = Number(value) || 0;
-        break;
-      case 'quantity':
-        updatedRecord.quantity = Number(value) || 0;
-        break;
-      case 'rebatePrice':
-        updatedRecord.rebatePrice = Number(value) || 0;
-        // 更新返利率
-        if (updatedRecord.price > 0) {
-          updatedRecord.rebateRate = Math.round((updatedRecord.rebatePrice / updatedRecord.price) * 100 * 100) / 100;
-        }
-        break;
-      case 'rebateRate':
-        updatedRecord.rebateRate = Number(value) || 0;
-        // 更新返利价格
-        if (updatedRecord.price > 0) {
-          updatedRecord.rebatePrice = Math.round((updatedRecord.price * updatedRecord.rebateRate / 100) * 100) / 100;
-        }
-        break;
+    if (record) {
+      // 编辑现有记录
+      setEditingKey(record.key);
+      setSelectedItemType(record.applicationTypeId);
+      
+      // 设置表单值
+      itemForm.setFieldsValue({
+        bigCategoryId: record.bigCategoryId,
+        middleCategoryId: record.middleCategoryId,
+        modelId: record.modelId,
+        priceTypeId: record.priceTypeId,
+        quantity: record.quantity,
+        applicationTypeId: record.applicationTypeId,
+        rebatePrice: record.applicationTypeId === 'app-001' ? record.rebatePrice : undefined,
+        rebateRate: record.applicationTypeId === 'app-002' ? record.rebateRate : undefined,
+        comment: record.comment
+      });
+      
+      // 设置大分类ID和中分类ID，触发数据加载
+      setSelectedBigCategoryId(record.bigCategoryId);
+      setSelectedMiddleCategoryId(record.middleCategoryId);
+    } else {
+      // 添加新记录
+      setEditingKey('');
+      // 重置选择的大分类和中分类ID
+      setSelectedBigCategoryId(undefined);
+      setSelectedMiddleCategoryId(undefined);
+      // 设置默认值
+      itemForm.setFieldsValue({
+        applicationTypeId: 'app-001',
+        price: 1, // 暂时写死为1
+        quantity: 1
+      });
+      setSelectedItemType('app-001');
     }
     
-    // 计算返利总金额
-    updatedRecord.rebateAmount = Math.round(updatedRecord.rebatePrice * updatedRecord.quantity * 100) / 100;
-    
-    return updatedRecord;
+    setModalVisible(true);
   };
 
-  // 处理表格单元格值变化
-  const handleCellValueChange = (key: string, field: string, value: any) => {
-    const newData = tableData.map(item => {
-      if (item.key === key) {
-        return calculateRebateAmount(item, field, value);
-      }
-      return item;
-    });
-    
-    setTableData(newData);
+  // 关闭弹窗
+  const handleModalCancel = () => {
+    setModalVisible(false);
+    setEditingKey('');
+    setSelectedBigCategoryId(undefined);
+    setSelectedMiddleCategoryId(undefined);
   };
 
   // 表格列定义
   const columns: ColumnsType<RebateItem> = [
     {
+      title: '大分类',
+      dataIndex: 'bigCategoryId',
+      key: 'bigCategoryId',
+      width: 120,
+      render: (bigCategoryId: string) => {
+        const category = bigCategories.find(c => c.id === bigCategoryId);
+        return category?.name || '-';
+      }
+    },
+    {
+      title: '中分类',
+      dataIndex: 'middleCategoryId',
+      key: 'middleCategoryId',
+      width: 120,
+      render: (middleCategoryId: string) => {
+        const category = middleCategories.find(c => c.id === middleCategoryId);
+        return category?.name || '-';
+      }
+    },
+    {
       title: '型号',
       dataIndex: 'modelId',
       key: 'modelId',
-      width: 160,
-      render: (modelId: string, record) => (
-        <Select
-          value={modelId}
-          style={{ width: '100%' }}
-          placeholder="选择型号"
-          onChange={(value) => handleCellValueChange(record.key, 'modelId', value)}
-          showSearch
-          filterOption={(input, option) =>
-            (option?.children as unknown as string)?.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {models.map(model => (
-            <Option key={model.id} value={model.id}>{model.code}</Option>
-          ))}
-        </Select>
-      )
+      width: 120,
+      render: (modelId: string) => {
+        const model = models.find(m => m.id === modelId);
+        return model?.code || '-';
+      }
     },
     {
       title: '价格类型',
       dataIndex: 'priceTypeId',
       key: 'priceTypeId',
-      width: 160,
+      width: 120,
       render: (priceTypeId: string, record) => (
         <Select
           value={priceTypeId}
           style={{ width: '100%' }}
           placeholder="选择价格类型"
-          onChange={(value) => handleCellValueChange(record.key, 'priceTypeId', value)}
+          onChange={(value) => handlePriceTypeChange(record.key, value)}
         >
           {priceTypes.map(type => (
             <Option key={type.id} value={type.id}>{type.name}</Option>
@@ -269,72 +427,64 @@ function RebateNewPage() {
       title: '价格',
       dataIndex: 'price',
       key: 'price',
-      width: 100,
-      render: (price: number, record) => (
-        <InputNumber
-          value={price}
-          style={{ width: '100%' }}
-          min={0}
-          step={0.01}
-          precision={2}
-          onChange={(value) => handleCellValueChange(record.key, 'price', value)}
-        />
-      )
+      width: 80,
+      render: (price: number) => price
     },
     {
       title: '数量',
       dataIndex: 'quantity',
       key: 'quantity',
-      width: 100,
+      width: 80,
       render: (quantity: number, record) => (
         <InputNumber
           value={quantity}
           style={{ width: '100%' }}
-          min={0}
-          onChange={(value) => handleCellValueChange(record.key, 'quantity', value)}
+          min={1}
+          onChange={(value) => handleQuantityChange(record.key, value)}
         />
       )
     },
     {
-      title: '返利单价(円)',
-      dataIndex: 'rebatePrice',
-      key: 'rebatePrice',
-      width: 140,
-      render: (rebatePrice: number, record) => (
-        <InputNumber
-          value={rebatePrice}
-          style={{ width: '100%' }}
-          min={0}
-          step={0.01}
-          precision={2}
-          onChange={(value) => handleCellValueChange(record.key, 'rebatePrice', value)}
-          addonAfter={<CalculatorOutlined />}
-        />
-      )
-    },
-    {
-      title: '返利率(%)',
-      dataIndex: 'rebateRate',
-      key: 'rebateRate',
+      title: '返利值',
+      key: 'rebateValue',
       width: 120,
-      render: (rebateRate: number, record) => (
-        <InputNumber
-          value={rebateRate}
-          style={{ width: '100%' }}
-          min={0}
-          max={100}
-          step={0.01}
-          precision={2}
-          onChange={(value) => handleCellValueChange(record.key, 'rebateRate', value)}
-          addonAfter="%"
-        />
-      )
+      render: (_, record) => {
+        if (record.applicationTypeId === 'app-001') {
+          // 单价申请显示返利单价输入框
+          return (
+            <InputNumber
+              value={record.rebatePrice}
+              style={{ width: '100%' }}
+              min={0}
+              step={0.01}
+              precision={2}
+              onChange={(value) => handleRebatePriceChange(record.key, value)}
+              addonAfter="元"
+            />
+          );
+        } else if (record.applicationTypeId === 'app-002') {
+          // 返利率申请显示返利率输入框
+          return (
+            <InputNumber
+              value={record.rebateRate}
+              style={{ width: '100%' }}
+              min={0}
+              max={100}
+              step={0.01}
+              precision={2}
+              onChange={(value) => handleRebateRateChange(record.key, value)}
+              addonAfter="%"
+            />
+          );
+        }
+        return '-';
+      }
     },
     {
       title: '申请金额',
       dataIndex: 'rebateAmount',
       key: 'rebateAmount',
-      width: 120,
+      width: 100,
       render: (rebateAmount: number) => (
         <span>{rebateAmount.toFixed(2)}</span>
       )
@@ -343,12 +493,25 @@ function RebateNewPage() {
       title: '备注',
       dataIndex: 'comment',
       key: 'comment',
+      width: 150,
       render: (comment: string, record) => (
         <Input
           value={comment}
-          onChange={(e) => handleCellValueChange(record.key, 'comment', e.target.value)}
+          onChange={(e) => handleCommentChange(record.key, e.target.value)}
           placeholder="备注"
         />
+      )
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 80,
+      render: (_, record) => (
+        <Space>
+          <Button type="link" onClick={() => handleEditRow(record)}>
+            编辑
+          </Button>
+        </Space>
       )
     }
   ];
@@ -372,7 +535,9 @@ function RebateNewPage() {
 
       // 验证表格必填项
       const invalidRow = tableData.findIndex(item => 
-        !item.modelId || !item.priceTypeId || item.price <= 0 || item.quantity <= 0 || item.rebatePrice <= 0);
+        !item.modelId || !item.priceTypeId || item.quantity <= 0 || 
+        (item.applicationTypeId === 'app-001' && item.rebatePrice <= 0) ||
+        (item.applicationTypeId === 'app-002' && item.rebateRate <= 0));
       
       if (invalidRow !== -1) {
         message.error(`第 ${invalidRow + 1} 行数据不完整，请检查必填项和数值`);
@@ -381,24 +546,32 @@ function RebateNewPage() {
 
       setSubmitLoading(true);
       
-      // 准备提交数据
-      const firstItem = tableData[0]; // 使用第一条明细数据
+      // 提取所有明细项的型号ID
+      const modelIds = tableData.map(item => item.modelId);
+      
+      // 使用第一个明细项的数据作为基础（除了modelIds）
+      const firstItem = tableData[0];
+      
+      // 创建返利申请请求
       const createRequest: CreateRebateRequest = {
         corporationId: formValues.corporationId,
         categoryId: formValues.categoryId,
         salesDeptId: formValues.salesDeptId,
         budgetDeptId: formValues.budgetDeptId,
-        modelIds: [firstItem.modelId], // 目前仅支持一种型号
+        bigCategoryId: firstItem.bigCategoryId,
+        middleCategoryId: firstItem.middleCategoryId,
+        modelIds: modelIds,
         periodStart: formValues.periodStart.format('YYYY-MM-DD'),
         periodEnd: formValues.periodEnd.format('YYYY-MM-DD'),
         priceTypeId: firstItem.priceTypeId,
         price: firstItem.price,
         quantity: firstItem.quantity,
-        applicationType: formValues.applicationType || '常规申请',
-        rebatePrice: firstItem.rebatePrice,
+        applicationTypeId: firstItem.applicationTypeId,
+        rebatePrice: firstItem.applicationTypeId === 'app-001' ? firstItem.rebatePrice : undefined,
+        rebateRate: firstItem.applicationTypeId === 'app-002' ? firstItem.rebateRate : undefined,
         title: formValues.title,
         description: formValues.description,
-        comment: firstItem.comment || formValues.comment
+        comment: firstItem.comment
       };
       
       // 创建返利申请
@@ -458,8 +631,276 @@ function RebateNewPage() {
     }
   };
 
+  // 处理表格中价格类型变更
+  const handlePriceTypeChange = (key: string, value: string) => {
+    const newData = tableData.map(item => {
+      if (item.key === key) {
+        return { ...item, priceTypeId: value };
+      }
+      return item;
+    });
+    setTableData(newData);
+    setFormModified(true);
+  };
+
+  // 处理表格中数量变更
+  const handleQuantityChange = (key: string, value: number | null) => {
+    const newData = tableData.map(item => {
+      if (item.key === key) {
+        const quantity = value || 0;
+        const newItem = { ...item, quantity };
+        
+        // 重新计算返利金额
+        if (newItem.applicationTypeId === 'app-001') {
+          newItem.rebateAmount = Math.round(newItem.rebatePrice * quantity * 100) / 100;
+        } else if (newItem.applicationTypeId === 'app-002') {
+          newItem.rebateAmount = Math.round(newItem.price * quantity * (newItem.rebateRate / 100) * 100) / 100;
+        }
+        
+        return newItem;
+      }
+      return item;
+    });
+    
+    setTableData(newData);
+    setFormModified(true);
+  };
+
+  // 处理表格中返利单价变更
+  const handleRebatePriceChange = (key: string, value: number | null) => {
+    const newData = tableData.map(item => {
+      if (item.key === key) {
+        const rebatePrice = value || 0;
+        const newItem = { ...item, rebatePrice };
+        
+        // 重新计算返利金额
+        newItem.rebateAmount = Math.round(rebatePrice * item.quantity * 100) / 100;
+        
+        return newItem;
+      }
+      return item;
+    });
+    
+    setTableData(newData);
+    setFormModified(true);
+  };
+
+  // 处理表格中返利率变更
+  const handleRebateRateChange = (key: string, value: number | null) => {
+    const newData = tableData.map(item => {
+      if (item.key === key) {
+        const rebateRate = value || 0;
+        const newItem = { ...item, rebateRate };
+        
+        // 重新计算返利金额
+        newItem.rebateAmount = Math.round(item.price * item.quantity * (rebateRate / 100) * 100) / 100;
+        
+        return newItem;
+      }
+      return item;
+    });
+    
+    setTableData(newData);
+    setFormModified(true);
+  };
+
+  // 处理表格中备注变更
+  const handleCommentChange = (key: string, value: string) => {
+    const newData = tableData.map(item => {
+      if (item.key === key) {
+        return { ...item, comment: value };
+      }
+      return item;
+    });
+    
+    setTableData(newData);
+    setFormModified(true);
+  };
+
   return (
     <div className="rebate-new-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F5F5F5', padding: '0 0 24px' }}>
+      {/* 添加/编辑明细弹窗 */}
+      <Modal
+        title={editingKey ? "编辑返利明细" : "添加返利明细"}
+        open={modalVisible}
+        onCancel={handleModalCancel}
+        footer={[
+          <Button key="cancel" onClick={handleModalCancel}>
+            取消
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            loading={modalLoading} 
+            onClick={handleModalSubmit}
+            style={{ 
+              background: 'linear-gradient(90deg, #1677ff 0%, #1890ff 100%)',
+              border: 'none',
+              boxShadow: '0 2px 0 rgba(5, 125, 255, 0.1)'
+            }}
+          >
+            确定
+          </Button>
+        ]}
+        width={700}
+      >
+        <Spin spinning={modalLoading}>
+          <Form
+            form={itemForm}
+            layout="vertical"
+            requiredMark={true}
+            name="itemForm"
+          >
+            <Row gutter={[16, 0]}>
+              <Col span={12}>
+                <Form.Item
+                  name="bigCategoryId"
+                  label="大分类"
+                  rules={[{ required: true, message: '请选择大分类' }]}
+                >
+                  <Select 
+                    placeholder="选择大分类"
+                    onChange={(value) => setSelectedBigCategoryId(value)}
+                  >
+                    {bigCategories.map(category => (
+                      <Option key={category.id} value={category.id}>{category.name}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="middleCategoryId"
+                  label="中分类"
+                  rules={[{ required: true, message: '请选择中分类' }]}
+                >
+                  <Select 
+                    placeholder="选择中分类"
+                    disabled={!selectedBigCategoryId}
+                    onChange={(value) => setSelectedMiddleCategoryId(value)}
+                  >
+                    {middleCategories.map(category => (
+                      <Option key={category.id} value={category.id}>{category.name}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="modelId"
+                  label="型号"
+                  rules={[{ required: true, message: '请选择型号' }]}
+                >
+                  <Select 
+                    placeholder="选择型号"
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.children as unknown as string)?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {models.filter(model => 
+                      (!selectedCorporationId || model.corporationId === selectedCorporationId) &&
+                      (!selectedBigCategoryId || model.bigCategoryId === selectedBigCategoryId) &&
+                      (!selectedMiddleCategoryId || model.middleCategoryId === selectedMiddleCategoryId)
+                    ).map(model => (
+                      <Option key={model.id} value={model.id}>{model.code}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="applicationTypeId"
+                  label="申请类型"
+                  rules={[{ required: true, message: '请选择申请类型' }]}
+                >
+                  <Select 
+                    placeholder="选择申请类型"
+                    onChange={handleApplicationTypeChange}
+                  >
+                    {APPLICATION_TYPES.map(type => (
+                      <Option key={type.id} value={type.id}>{type.name}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="priceTypeId"
+                  label="价格类型"
+                  rules={[{ required: true, message: '请选择价格类型' }]}
+                >
+                  <Select placeholder="选择价格类型">
+                    {priceTypes.map(type => (
+                      <Option key={type.id} value={type.id}>{type.name}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="quantity"
+                  label="数量"
+                  rules={[{ required: true, message: '请输入数量' }]}
+                >
+                  <InputNumber 
+                    style={{ width: '100%' }} 
+                    min={1}
+                    precision={0}
+                  />
+                </Form.Item>
+              </Col>
+              {selectedItemType === 'app-001' && (
+                <Col span={8}>
+                  <Form.Item
+                    name="rebatePrice"
+                    label="申请单价（元）"
+                    rules={[{ required: true, message: '请输入申请单价' }]}
+                  >
+                    <InputNumber 
+                      style={{ width: '100%' }} 
+                      min={0}
+                      step={0.01}
+                      precision={2}
+                      addonAfter="元"
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+              {selectedItemType === 'app-002' && (
+                <Col span={8}>
+                  <Form.Item
+                    name="rebateRate"
+                    label="申请率（%）"
+                    rules={[{ required: true, message: '请输入申请率' }]}
+                  >
+                    <InputNumber 
+                      style={{ width: '100%' }} 
+                      min={0}
+                      max={100}
+                      step={0.01}
+                      precision={2}
+                      addonAfter="%"
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+              <Col span={24}>
+                <Form.Item
+                  name="comment"
+                  label="备注"
+                >
+                  <TextArea 
+                    rows={2} 
+                    placeholder="请输入备注"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Spin>
+      </Modal>
+
       <FadeIn>
         <div className="page-header" style={{ 
           display: 'flex', 
@@ -490,14 +931,14 @@ function RebateNewPage() {
           }
           variant="borderless"
           style={{ 
-            marginBottom: 24, 
+            marginBottom: 16, 
             borderRadius: 12,
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02)',
             background: 'white'
           }}
           styles={{ 
-            header: { padding: '12px 16px' },
-            body: { padding: '12px 16px 8px' } 
+            header: { padding: '8px 16px' },
+            body: { padding: '8px 16px 4px' } 
           }}
           size="small"
         >
@@ -510,10 +951,11 @@ function RebateNewPage() {
               periodEnd: dayjs().add(1, 'month')
             }}
             size="middle"
-            requiredMark={false}
+            requiredMark={true}
+            name="rebateForm"
           >
-            <Row gutter={[16, 0]}>
-              <Col span={6}>
+            <Row gutter={[12, 0]}>
+              <Col span={4}>
                 <Form.Item
                   label="法人"
                   name="corporationId"
@@ -534,7 +976,7 @@ function RebateNewPage() {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Form.Item
                   label="返利区分"
                   name="categoryId"
@@ -551,7 +993,7 @@ function RebateNewPage() {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Form.Item
                   label="销售区分"
                   name="salesDeptId"
@@ -568,7 +1010,7 @@ function RebateNewPage() {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Form.Item
                   label="预算分类"
                   name="budgetDeptId"
@@ -585,7 +1027,7 @@ function RebateNewPage() {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Form.Item
                   label="返利开始日期"
                   name="periodStart"
@@ -599,7 +1041,7 @@ function RebateNewPage() {
                   />
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Form.Item
                   label="返利结束日期"
                   name="periodEnd"
@@ -611,28 +1053,6 @@ function RebateNewPage() {
                     locale={locale}
                     format="YYYY-MM-DD"
                   />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item
-                  label="申请类型"
-                  name="applicationType"
-                  style={{ marginBottom: 12 }}
-                >
-                  <Select placeholder="选择申请类型">
-                    <Option value="常规申请">常规申请</Option>
-                    <Option value="特殊申请">特殊申请</Option>
-                    <Option value="紧急申请">紧急申请</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item
-                  label="返利区间"
-                  name="range"
-                  style={{ marginBottom: 12 }}
-                >
-                  <Input placeholder="输入返利区间，如 标准返利" />
                 </Form.Item>
               </Col>
               <Col span={12}>

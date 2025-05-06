@@ -314,7 +314,7 @@ function RebateOverviewPage() {
       )
     },
     {
-      title: '区分',
+      title: '返利区分',
       dataIndex: ['category', 'name'],
       key: 'category',
       width: 100,
@@ -368,6 +368,34 @@ function RebateOverviewPage() {
       ),
     },
     {
+      title: '大分类',
+      dataIndex: ['bigCategory', 'name'],
+      key: 'bigCategory',
+      width: 120,
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (text) => (
+        <Tooltip placement="topLeft" title={text}>
+          {text}
+        </Tooltip>
+      ),
+    },
+    {
+      title: '中分类',
+      dataIndex: ['middleCategory', 'name'],
+      key: 'middleCategory',
+      width: 120,
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (text) => (
+        <Tooltip placement="topLeft" title={text}>
+          {text}
+        </Tooltip>
+      ),
+    },
+    {
       title: '型号',
       dataIndex: ['models'],
       key: 'models',
@@ -397,20 +425,6 @@ function RebateOverviewPage() {
           {record.periodStart}-{record.periodEnd}
         </div>
       ),
-    },
-    {
-      title: '返利区分',
-      dataIndex: 'range',
-      key: 'range',
-      width: 100,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
-        </Tooltip>
-      )
     },
     {
       title: '价格类型',
@@ -458,32 +472,31 @@ function RebateOverviewPage() {
       )
     },
     {
-      title: '申请类型',
-      dataIndex: 'applicationType',
-      key: 'applicationType',
+      title: '返利值',
+      key: 'rebateValue',
       width: 120,
       ellipsis: {
         showTitle: false,
       },
-      render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
-        </Tooltip>
-      )
-    },
-    {
-      title: '返利值',
-      dataIndex: 'rebatePrice',
-      key: 'rebatePrice',
-      width: 100,
-      ellipsis: {
-        showTitle: false,
+      render: (_, record) => {
+        // 根据申请类型ID判断显示返利单价还是返利率
+        if (record.applicationType?.id === 'app-001') { // 单价申请
+          return (
+            <Tooltip placement="topLeft" title={`${record.rebatePrice || 0}(元)`}>
+              {`${record.rebatePrice || 0}(元)`}
+            </Tooltip>
+          );
+        } else if (record.applicationType?.id === 'app-002') { // 返利率申请
+          // 返利率通常以百分比形式显示
+          const rateValue = record.rebateRate ? (record.rebateRate / 100) : 0;
+          return (
+            <Tooltip placement="topLeft" title={`${rateValue}%`}>
+              {`${rateValue}(%)`}
+            </Tooltip>
+          );
+        }
+        return '-'; // 默认显示
       },
-      render: (price: number) => (
-        <Tooltip placement="topLeft" title={`${price}(元)`}>
-          {`${price}(元)`}
-        </Tooltip>
-      ),
     },
     {
       title: '申请金额',
