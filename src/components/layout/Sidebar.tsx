@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigation } from '@/hooks/useNavigation';
 import Image from 'next/image';
 import '../../styles/sidebar.css'; // 引入自定义CSS
 
@@ -24,7 +25,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onCollapse }) => {
-  const router = useRouter();
+  const { navigateTo, navigateWithConfirm } = useNavigation();
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const { logout, user } = useAuth();
@@ -38,21 +39,59 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapse }) => {
     }
   }, [pathname]);
 
-  const isInPath = (path: string) => {
-    return pathname.startsWith(path);
-  };
+  // const isInPath = (path: string) => {
+  //   return pathname.startsWith(path);
+  // };
 
   const handleMenuClick = (e: { key: string }) => {
     if (collapsed && e.key.split('/').length > 3) {
       handleCollapse();
     }
-    router.push(e.key);
+    
+    // 根据不同的路径设置不同的加载消息
+    const loadingMessages: Record<string, string> = {
+      '/main/dashboard': '正在加载仪表盘...',
+      '/main/profile': '正在加载个人信息...',
+      '/main/clients': '正在加载客户管理...',
+      '/main/rebate/description': '正在加载返利项目描述...',
+      '/main/rebate/use/overviewpage': '正在加载返利申请一览...',
+      '/main/rebate/use/new': '正在准备创建返利申请...',
+      '/main/densotask/description': '正在加载任务平台描述...',
+      '/main/densotask/use': '正在加载任务平台...',
+      '/main/documents': '正在加载文档中心...',
+      '/main/settings': '正在加载系统设置...'
+    };
+    
+    // 确定可能有未保存内容的页面路径
+    const pathsWithConfirm = ['/main/rebate/use/new'];
+    
+    // 获取当前选中页面的路径
+    const path = e.key;
+    
+    // 判断是否需要确认对话框
+    if (pathsWithConfirm.includes(pathname)) {
+      navigateWithConfirm(path, {
+        shouldConfirm: true,
+        confirmMessage: '您可能有未保存的内容，确定要离开吗？',
+        loadingMessage: loadingMessages[path] || '正在加载页面...'
+      });
+    } else {
+      navigateTo(path, { 
+        loadingMessage: loadingMessages[path] || '正在加载页面...'
+      });
+    }
   };
 
   const handleLogoutClick = () => {
     console.log('Logout clicked');
-    logout();
-    router.push('/login?logout=success');
+    navigateWithConfirm('/login?logout=success', {
+      shouldConfirm: true,
+      confirmMessage: '确定要退出登录吗？',
+      loadingMessage: '正在退出登录...',
+      onComplete: () => {
+        logout();
+      }
+    });
   };
 
   const handleCollapse = () => {
@@ -235,7 +274,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapse }) => {
                     type="text" 
                     icon={<SettingOutlined />} 
                     size="small"
-                    onClick={() => router.push('/main/settings')} 
+                    onClick={() => navigateTo('/main/settings', { loadingMessage: '正在加载系统设置...' })} 
                   />
                 </Tooltip>
               )}

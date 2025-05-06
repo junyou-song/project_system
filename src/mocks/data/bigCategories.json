@@ -1,0 +1,122 @@
+[
+  {
+    "id": "big-001",
+    "name": "板材类",
+    "code": "BC",
+    "corporationId": "corp-001",
+    "description": "各类板材产品",
+    "isActive": true
+  },
+  {
+    "id": "big-002",
+    "name": "装饰材料",
+    "code": "ZSC",
+    "corporationId": "corp-002",
+    "description": "室内装饰用材料",
+    "isActive": true
+  },
+  {
+    "id": "big-003",
+    "name": "木质材料",
+    "code": "MZC",
+    "corporationId": "corp-003",
+    "description": "各类木质及木制品",
+    "isActive": true
+  },
+  {
+    "id": "big-004",
+    "name": "包装材料",
+    "code": "BZC",
+    "corporationId": "corp-004",
+    "description": "纸质包装产品",
+    "isActive": true
+  },
+  {
+    "id": "big-005",
+    "name": "家具类",
+    "code": "JJL",
+    "corporationId": "corp-005",
+    "description": "成品家具",
+    "isActive": true
+  },
+  {
+    "id": "big-006",
+    "name": "五金配件",
+    "code": "WJPJ",
+    "corporationId": "corp-006",
+    "description": "各类五金制品",
+    "isActive": true
+  },
+  {
+    "id": "big-007",
+    "name": "地面材料",
+    "code": "DMCL",
+    "corporationId": "corp-007",
+    "description": "地板、地砖等地面材料",
+    "isActive": true
+  },
+  {
+    "id": "big-008",
+    "name": "照明设备",
+    "code": "ZMSB",
+    "corporationId": "corp-008",
+    "description": "各类照明产品",
+    "isActive": true
+  },
+  {
+    "id": "big-009",
+    "name": "塑料制品",
+    "code": "SLZP",
+    "corporationId": "corp-009",
+    "description": "各类塑料制品",
+    "isActive": true
+  },
+  {
+    "id": "big-010",
+    "name": "钢材类",
+    "code": "GCL",
+    "corporationId": "corp-010",
+    "description": "各类钢材产品",
+    "isActive": true
+  },
+  {
+    "id": "big-011",
+    "name": "家电类",
+    "code": "JDL",
+    "corporationId": "corp-011",
+    "description": "各类家用电器",
+    "isActive": true
+  },
+  {
+    "id": "big-012",
+    "name": "陶瓷类",
+    "code": "TCL",
+    "corporationId": "corp-012",
+    "description": "各类陶瓷产品",
+    "isActive": true
+  },
+  {
+    "id": "big-013",
+    "name": "工程机械",
+    "code": "GCJX",
+    "corporationId": "corp-013",
+    "description": "各类工程用机械设备",
+    "isActive": true
+  },
+  {
+    "id": "big-014",
+    "name": "园艺用品",
+    "code": "YYYP",
+    "corporationId": "corp-014",
+    "description": "园艺和景观用品",
+    "isActive": true
+  },
+  {
+    "id": "big-015",
+    "name": "办公家具",
+    "code": "BGJJ",
+    "corporationId": "corp-015",
+    "description": "各类办公室家具",
+    "isActive": true
+  }
+]

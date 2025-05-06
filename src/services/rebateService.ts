@@ -12,8 +12,10 @@ import {
   PriceType,
   Model,
   RebateStatus,
-  RebateStats
-} from '@/types/rebate'; // 确保类型文件路径正确
+  RebateStats,
+  BigCategory,
+  MiddleCategory
+} from '@/types/Rebate/rebate'; // 确保类型文件路径正确
 
 // API 基础 URL (建议从环境变量或配置文件读取)
 const API_BASE_URL = '/api';
@@ -220,12 +222,29 @@ export const rebateService = {
     }
     return this._fetchList<PriceType>('/priceTypes', params, '价格类型数据');
   },
+  /**
+   * 获取大分类列表 (统一入口)
+   * @param corporationId - 法人 ID，用于筛选大分类列表
+   */
+  async getbigCategories(params?: { corporationId?: string; isActive?: boolean }): Promise<BigCategory[]> {
+      return this._fetchList<BigCategory>('/bigCategories', params || {}, '大分类数据');
+  },
+
+    /**
+   * 获取中分类列表 (统一入口)
+   * @param corporationId - 法人 ID，用于筛选中分类列表
+   */
+    async getmiddleCategories(params?: { bigCategoryId?: string; isActive?: boolean }): Promise<MiddleCategory[]> {
+      return this._fetchList<MiddleCategory>('/middleCategories', params || {}, '中分类数据');
+  },
 
   /**
    * 获取产品型号列表 (统一入口)
    * @param corporationId - 法人 ID，用于筛选产品型号列表
+   * @param bigCategoryId - 大分类 ID，用于筛选产品型号列表
+   * @param middleCategoryId - 中分类 ID，用于筛选产品型号列表
    */
-  async getModels(params?: { corporationId?: string; isActive?: boolean }): Promise<Model[]> {
+  async getModels(params?: { corporationId?: string; bigCategoryId?: string; middleCategoryId?: string; isActive?: boolean }): Promise<Model[]> {
     return this._fetchList<Model>('/models', params || {}, '产品型号数据');
   }
 };

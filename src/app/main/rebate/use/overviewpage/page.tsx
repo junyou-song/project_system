@@ -42,16 +42,19 @@ import {
   BudgetDept,
   PriceType,
   Model
-} from '@/types/rebate';
+} from '@/types/Rebate/rebate';
+import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/useNavigation';
 
 const { Title, Paragraph } = Typography;
-const { RangePicker } = DatePicker;
 const { Option, OptGroup } = Select;
 
 // 主要组件
 function RebateOverviewPage() {
   const { message } = App.useApp(); // 使用App.useApp获取上下文
-  
+  const { navigateTo, navigateWithConfirm } = useNavigation();
+  const router = useRouter();
+
   // 实际查询参数 - 用于触发API查询
   const [searchParams, setSearchParams] = useState<RebateSearchParams>({
     applicationNumber: undefined,
@@ -260,6 +263,21 @@ function RebateOverviewPage() {
     setSearchParams({ ...searchParams, page, pageSize: pageSize || 10 });
   };
   
+  // 处理新建返利申请
+  const handleNavigateToNewRebate = () => {
+    navigateTo('/main/rebate/use/new', { 
+      loadingMessage: '正在准备创建返利申请...',
+      timeout: 1000 // 限制最大加载时间为1秒
+    });
+  };
+  
+  // 处理查看返利详情
+  const handleNavigateToDetail = (id: string) => {
+    navigateTo(`/main/rebate/use/detail/${id}`, { 
+      loadingMessage: '正在加载返利详情...'
+    });
+  };
+  
   // 表格列定义
   const columns: ColumnsType<RebateRecordWithRelations> = [
     {
@@ -277,7 +295,7 @@ function RebateOverviewPage() {
       ellipsis: { showTitle: false },
       render: (text: string, record) => (
         <Tooltip placement="topLeft" title={text}>
-          <a href={`/main/rebate/use/detail/${record.id}`} style={{ color: '#1677ff' }}>{text}</a>
+          <a onClick={() => handleNavigateToDetail(record.id)} style={{ color: '#1677ff', cursor: 'pointer' }}>{text}</a>
         </Tooltip >
       ),
     },
@@ -599,17 +617,19 @@ function RebateOverviewPage() {
               查看和管理所有返利申请记录
             </Paragraph>
           </div>
-          <Button 
-            icon={<ExportOutlined />} 
-            style={{ 
-              borderRadius: 8,
-              background: 'white',
-              borderColor: '#d9d9d9',
-              boxShadow: '0 2px 0 rgba(0, 0, 0, 0.02)'
-            }}
-          >
-            导出数据
-          </Button>
+          <Space>
+            <Button 
+              icon={<ExportOutlined />} 
+              style={{ 
+                borderRadius: 8,
+                background: 'white',
+                borderColor: '#d9d9d9',
+                boxShadow: '0 2px 0 rgba(0, 0, 0, 0.02)'
+              }}
+            >
+              导出数据
+            </Button>
+          </Space>
         </div>
       </FadeIn>
 
@@ -1033,7 +1053,7 @@ function RebateOverviewPage() {
               <Button 
                 type="primary" 
                 icon={<PlusOutlined />}
-                href="/main/rebate/use/new" 
+                onClick={handleNavigateToNewRebate}
                 style={{ 
                   borderRadius: 8,
                   background: 'linear-gradient(90deg, #1677ff 0%, #1890ff 100%)',

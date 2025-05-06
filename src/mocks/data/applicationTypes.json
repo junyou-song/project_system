@@ -1,0 +1,16 @@
+[
+  {
+    "id": "app-001",
+    "name": "单价申请",
+    "code": "DJA",
+    "description": "基于单价计算的返利申请，填写返利单价(rebatePrice)",
+    "isActive": true
+  },
+  {
+    "id": "app-002",
+    "name": "返利率申请",
+    "code": "FLA",
+    "description": "基于返利率计算的返利申请，填写返利率(rebateRate)",
+    "isActive": true
+  }
+] 

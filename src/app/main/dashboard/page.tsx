@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Typography, Card, Row, Col, Statistic, Space, Tag, List, Avatar, Progress, Input, Button } from 'antd';
+import { Typography, Card, Row, Col, Space, Tag, Avatar, Input, Button } from 'antd';
 import { 
   SearchOutlined,
   BarChartOutlined,
@@ -13,10 +13,13 @@ import {
   EyeOutlined
 } from '@ant-design/icons';
 import FadeIn from '@/components/transitions/FadeIn';
+import { useNavigation } from '@/hooks/useNavigation';
 
 const { Title, Paragraph } = Typography;
 
 export default function DashboardPage() {
+  const { navigateTo, navigateWithConfirm } = useNavigation();
+
   return (
     <div className="dashboard-container">
       <FadeIn>
@@ -33,9 +36,6 @@ export default function DashboardPage() {
               prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
               style={{ width: 240, borderRadius: 8 }}
             />
-            <Button type="primary" icon={<PlusOutlined />}>
-              添加新小组件
-            </Button>
           </div>
         </div>
       </FadeIn>
@@ -49,7 +49,7 @@ export default function DashboardPage() {
               variant="borderless"
               extra={<Button type="text" style={{ color: '#1677ff' }}>导出</Button>}
               style={{ height: '100%', borderRadius: 12 }}
-              bodyStyle={{ padding: '24px 24px 0' }}
+              styles={{body:{padding: '24px 24px 0'}}}
             >
               {/* 假设这里有个图表组件 */}
               <div style={{ 
@@ -81,7 +81,7 @@ export default function DashboardPage() {
                         background: '#f5f5f5',
                         border: 'none'
                       }}
-                      bodyStyle={{ padding: 16 }}
+                      styles={{body:{padding: '16px'}}}
                     >
                       <Space>
                         <Avatar 

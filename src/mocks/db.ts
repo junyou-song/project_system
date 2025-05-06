@@ -9,6 +9,9 @@ import salesDepts from './data/salesDepts.json';
 import budgetDepts from './data/budgetDepts.json';
 import priceTypes from './data/priceTypes.json';
 import rebates from './data/rebates.json';
+import applicationTypes from './data/applicationTypes.json';
+import bigCategories from './data/bigCategories.json';
+import middleCategories from './data/middleCategories.json';
 import model from './data/model.json';
 import { 
   Corporation, 
@@ -22,8 +25,11 @@ import {
   RebateSearchParams,
   RebateStatus,
   RebateStats,
-  Model
-} from '@/types/rebate';
+  Model,
+  ApplicationType,
+  BigCategory,
+  MiddleCategory
+} from '@/types/Rebate/rebate';
 
 // 内存数据库
 class MockDatabase {
@@ -33,6 +39,9 @@ class MockDatabase {
   private budgetDepts: BudgetDept[] = [];
   private priceTypes: PriceType[] = [];
   private rebates: RebateRecord[] = [];
+  private applicationTypes: ApplicationType[] = [];
+  private bigCategories: BigCategory[] = [];
+  private middleCategories: MiddleCategory[] = [];
   private models: Model[] = [];
 
   constructor() {
@@ -46,9 +55,64 @@ class MockDatabase {
     this.salesDepts = salesDepts as SalesDept[];
     this.budgetDepts = budgetDepts as BudgetDept[];
     this.priceTypes = priceTypes as PriceType[];
+    this.applicationTypes = applicationTypes as ApplicationType[];
+    this.bigCategories = bigCategories as BigCategory[];
+    this.middleCategories = middleCategories as MiddleCategory[];
     this.rebates = rebates as RebateRecord[];
     this.models = model as Model[];
   }
+
+
+  /**
+   * 根据返利记录数据和申请类型计算返利金额。
+   * @param rebateData 包含计算所需字段的部分或完整的返利记录对象。
+   * @returns 计算得到的返利金额 (number)，如果无法计算则返回 0。
+   * @private
+   */
+   private _calculateRebateAmount(rebateData: Partial<RebateRecord>): number {
+    let calculatedAmount = 0;
+
+    // 基础检查
+    if (!rebateData || !rebateData.applicationTypeId || typeof rebateData.quantity !== 'number') {
+      console.warn("无法计算返利金额：缺少 applicationTypeId 或 quantity 无效。");
+      return calculatedAmount; // 返回 0
+    }
+
+    // 查找申请类型以确定计算方法
+    const appType = this.getApplicationTypeById(rebateData.applicationTypeId);
+    if (!appType || !appType.id) {
+        console.warn(`无法计算返利金额：未找到 ID 为 ${rebateData.applicationTypeId} 的申请类型或其缺少 calculationMethod。`);
+        return calculatedAmount; // 返回 0
+    }
+
+    // 根据计算方法执行计算
+    switch (appType.id) {
+      case 'app-001': // 按返利单价计算
+        if (typeof rebateData.rebatePrice === 'number') {
+          calculatedAmount = rebateData.rebatePrice * rebateData.quantity;
+        } else {
+          console.warn(`单价。计算跳过：rebatePrice 无效或缺失 (ID: ${rebateData.id || 'N/A'})。`);
+        }
+        break;
+
+      case 'app-002': // 按返利率计算
+        if (typeof rebateData.price === 'number' && typeof rebateData.rebateRate === 'number') {
+          calculatedAmount = rebateData.price * rebateData.quantity * rebateData.rebateRate;
+        } else {
+          console.warn(`率。计算跳过：price 或 rebateRate 无效或缺失 (ID: ${rebateData.id || 'N/A'})。`);
+        }
+        break;
+
+      default:
+        console.warn(`未知的申请类型: ${appType.name} (申请类型 ID: ${appType.id})。`);
+        break;
+    }
+
+    // 返回计算结果，确保是数字且有效（例如，非 NaN）
+    return isNaN(calculatedAmount) ? 0 : calculatedAmount;
+  }
+  // --- 计算方法结束 ---
+
 
   // 基础查询方法
   getCorporations(isActive?: boolean): Corporation[] {
@@ -86,11 +150,57 @@ class MockDatabase {
     return this.priceTypes;
   }
 
-  getModels(param: { corporationId?: string; isActive?: boolean }): Model[] {
+  getApplicationTypes(isActive?: boolean): ApplicationType[] {
+    if (isActive !== undefined) {
+      return this.applicationTypes.filter(type => type.isActive === isActive);
+    }
+    return this.applicationTypes;
+  }
+
+  getBigCategories(param: { corporationId?: string; isActive?: boolean }): BigCategory[] {
+    let filteredBigCategories = this.bigCategories;
+
+    if (param.corporationId) {
+      filteredBigCategories = filteredBigCategories.filter(m => m.corporationId === param.corporationId);
+    }
+
+    if (typeof param.isActive === 'boolean') {
+      filteredBigCategories = filteredBigCategories.filter(m => m.isActive === param.isActive);
+    }
+    return filteredBigCategories;
+  }
+
+  getMiddleCategories(param: { bigCategoryId?: string; isActive?: boolean }): MiddleCategory[] {
+    let filteredMiddleCategories = this.middleCategories;
+
+    if (param.bigCategoryId) {
+      filteredMiddleCategories = filteredMiddleCategories.filter(m => m.bigCategoryId === param.bigCategoryId);
+    }
+
+    if (typeof param.isActive === 'boolean') {
+      filteredMiddleCategories = filteredMiddleCategories.filter(m => m.isActive === param.isActive);
+    }
+    return filteredMiddleCategories;
+  }
+
+  getModels(param: { 
+    corporationId?: string; 
+    bigCategoryId?: string;
+    middleCategoryId?: string;
+    isActive?: boolean 
+  }): Model[] {
     let filteredModels = this.models;
 
     if (param.corporationId) {
       filteredModels = filteredModels.filter(m => m.corporationId === param.corporationId);
+    }
+
+    if (param.bigCategoryId) {
+      filteredModels = filteredModels.filter(m => m.bigCategoryId === param.bigCategoryId);
+    }
+
+    if (param.middleCategoryId) {
+      filteredModels = filteredModels.filter(m => m.middleCategoryId === param.middleCategoryId);
     }
 
     if (typeof param.isActive === 'boolean') {
@@ -120,6 +230,18 @@ class MockDatabase {
     return this.priceTypes.find(type => type.id === id);
   }
 
+  getApplicationTypeById(id: string): ApplicationType | undefined {
+    return this.applicationTypes.find(type => type.id === id);
+  }
+
+  getBigCategoryById(id: string): BigCategory | undefined {
+    return this.bigCategories.find(cat => cat.id === id);
+  }
+
+  getMiddleCategoryById(id: string): MiddleCategory | undefined {
+    return this.middleCategories.find(cat => cat.id === id);
+  }
+
   // 根据型号ID查找所有的产品型号详细数据
   getModelByIds(ids: string[]): Model[]{
     if (!ids || ids.length === 0) {
@@ -142,9 +264,13 @@ class MockDatabase {
     const salesDept = this.getSalesDeptById(rebate.salesDeptId);
     const budgetDept = this.getBudgetDeptById(rebate.budgetDeptId);
     const priceType = this.getPriceTypeById(rebate.priceTypeId);
+    const bigCategory = this.getBigCategoryById(rebate.bigCategoryId);
+    const middleCategory = this.getMiddleCategoryById(rebate.middleCategoryId);
     const models = this.getModelByIds(rebate.modelIds);
+    const applicationType = this.getApplicationTypeById(rebate.applicationTypeId);
 
-    if (!corporation || !category || !salesDept || !budgetDept || !priceType) {
+    if (!corporation || !category || !salesDept || !budgetDept || !priceType || 
+        !bigCategory || !middleCategory || !applicationType) {
       return undefined;
     }
 
@@ -155,6 +281,9 @@ class MockDatabase {
       salesDept,
       budgetDept,
       priceType,
+      bigCategory,
+      middleCategory,
+      applicationType,
       models
     };
   }
@@ -220,6 +349,18 @@ class MockDatabase {
       filteredRebates = filteredRebates.filter(r => r.priceTypeId === params.priceTypeId);
     }
 
+    if (params.applicationTypeId) {
+      filteredRebates = filteredRebates.filter(r => r.applicationTypeId === params.applicationTypeId);
+    }
+
+    if (params.bigCategoryId) {
+      filteredRebates = filteredRebates.filter(r => r.bigCategoryId === params.bigCategoryId);
+    }
+
+    if (params.middleCategoryId) {
+      filteredRebates = filteredRebates.filter(r => r.middleCategoryId === params.middleCategoryId);
+    }
+
     if (params.modelIds && Array.isArray(params.modelIds) && params.modelIds.length > 0) {
       const currentModelIds = params.modelIds;
       filteredRebates = filteredRebates.filter(r => 
@@ -239,12 +380,23 @@ class MockDatabase {
     const paginatedRebates = filteredRebates
       .slice(startIndex, endIndex)
       .map(rebate => {
-        const corporation = this.getCorporationById(rebate.corporationId)!;
-        const category = this.getCategoryById(rebate.categoryId)!;
-        const salesDept = this.getSalesDeptById(rebate.salesDeptId)!;
-        const budgetDept = this.getBudgetDeptById(rebate.budgetDeptId)!;
-        const priceType = this.getPriceTypeById(rebate.priceTypeId)!;
+        const corporation = this.getCorporationById(rebate.corporationId);
+        const category = this.getCategoryById(rebate.categoryId);
+        const salesDept = this.getSalesDeptById(rebate.salesDeptId);
+        const budgetDept = this.getBudgetDeptById(rebate.budgetDeptId);
+        const priceType = this.getPriceTypeById(rebate.priceTypeId);
+        const bigCategory = this.getBigCategoryById(rebate.bigCategoryId);
+        const middleCategory = this.getMiddleCategoryById(rebate.middleCategoryId);
         const models = this.getModelByIds(rebate.modelIds);
+        const applicationType = this.getApplicationTypeById(rebate.applicationTypeId);
+
+        if (!corporation || !category || !salesDept || !budgetDept || !priceType || !bigCategory || !middleCategory || !applicationType ) {
+
+        console.warn(`ID 为 ${rebate.id} 的返利记录缺少部分关联数据，将在结果中被跳过。`);
+        
+        // 决定如何处理：返回 null 以便后续过滤掉
+        return null; 
+        }
 
         return {
           ...rebate,
@@ -253,12 +405,15 @@ class MockDatabase {
           salesDept,
           budgetDept,
           priceType,
+          bigCategory,
+          middleCategory,
+          applicationType,
           models
-        };
+        } as RebateRecordWithRelations;
       });
 
     return {
-      data: paginatedRebates,
+      data: paginatedRebates.filter(rebate => rebate !== null) as RebateRecordWithRelations[],
       total,
       page,
       pageSize,
@@ -285,25 +440,27 @@ class MockDatabase {
 
     const now = new Date().toISOString();
     
-    const newRebate: RebateRecord = {
+    const newRebateBase: RebateRecord = {
       id: newId,
       applicationNumber: newApplicationNumber,
       corporationId: rebate.corporationId || '',
       categoryId: rebate.categoryId || '',
       salesDeptId: rebate.salesDeptId || '',
       budgetDeptId: rebate.budgetDeptId || '', 
+      applicationTypeId: rebate.applicationTypeId || '',
+      bigCategoryId: rebate.bigCategoryId || '',
+      middleCategoryId: rebate.middleCategoryId || '',
       modelIds: rebate.modelIds || [],
       modelNames: rebate.modelNames || '',
       periodStart: rebate.periodStart || '',
       periodEnd: rebate.periodEnd || '',
       status: rebate.status || RebateStatus.DRAFT,
-      range: rebate.range || 'All',
       priceTypeId: rebate.priceTypeId || '',
       price: rebate.price || 0,
       quantity: rebate.quantity || 0,
-      applicationType: rebate.applicationType || '申请单价',
-      rebatePrice: rebate.rebatePrice || 0,
-      rebateAmount: rebate.rebateAmount || 0,
+      rebatePrice: rebate.rebatePrice,
+      rebateRate: rebate.rebateRate,
+      rebateAmount: 0,
       title: rebate.title || '',
       description: rebate.description || '',
       comment: rebate.comment || '',
@@ -312,6 +469,13 @@ class MockDatabase {
       createdAt: now,
       updatedAt: now
     };
+
+    const calculatedAmount = this._calculateRebateAmount(newRebateBase);
+
+    const newRebate = {
+      ...newRebateBase,
+      rebateAmount: calculatedAmount
+    }
 
     this.rebates.push(newRebate);
     return newRebate;
@@ -323,11 +487,18 @@ class MockDatabase {
     if (index === -1) return undefined;
 
     const rebate = this.rebates[index];
-    const updatedRebate = {
+    const potentiallyUpdatedRebate  = {
       ...rebate,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
+
+    const calculatedAmount = this._calculateRebateAmount(potentiallyUpdatedRebate);
+
+    const updatedRebate: RebateRecord = {
+      ...potentiallyUpdatedRebate,
+      rebateAmount: calculatedAmount // 使用重新计算的金额
+  };
 
     this.rebates[index] = updatedRebate;
     return updatedRebate;

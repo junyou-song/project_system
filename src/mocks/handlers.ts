@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { credentials, LoginResponse } from '@/types/auth'
 import { User } from '@/types/user'
-import { rebateHandlers } from './handlers/rebate'; // 导入返利申请处理器
+import { rebateHandlers } from './Rebate/rebate'; // 导入返利申请处理器
 
 const mockUserName = 'admin';
 const mockPassword = 'admin';

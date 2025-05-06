@@ -42,12 +42,43 @@ export interface PriceType {
   isActive: boolean;
 }
 
+// 申请类型
+export interface ApplicationType {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  isActive: boolean;
+}
+
+// 大分类
+export interface BigCategory {
+  id: string;
+  name: string;
+  code: string;
+  corporationId: string; // 法人实体ID(关联法人实体表)
+  description?: string;
+  isActive: boolean;
+}
+
+// 中分类
+export interface MiddleCategory {
+  id: string;
+  name: string;
+  code: string;
+  bigCategoryId: string; // 大分类ID(关联大分类表)
+  description?: string;
+  isActive: boolean;
+}
+
 // 产品型号
 export interface Model { 
   id: string;
   name: string;
   code: string;
   corporationId: string; // 法人实体ID(关联法人实体表)
+  bigCategoryId: string; // 大分类ID(关联大分类表)
+  middleCategoryId: string; // 中分类ID(关联中分类表)
   description?: string;
   isActive: boolean;
 }
@@ -91,17 +122,19 @@ export interface RebateRecord {
   categoryId: string;
   salesDeptId: string;
   budgetDeptId: string;
+  bigCategoryId: string; 
+  middleCategoryId: string;
+  applicationTypeId: string;
   modelIds: string[];
   modelNames?: string;
   periodStart: string; // 格式: YYYY-MM-DD
   periodEnd: string;   // 格式: YYYY-MM-DD
   status: RebateStatus;
-  range: string;
   priceTypeId: string;
   price: number;
   quantity: number;
-  applicationType: string;
-  rebatePrice: number;
+  rebatePrice?: number | null;
+  rebateRate?: number | null;
   rebateAmount: number;
   title: string;
   description?: string;
@@ -121,6 +154,9 @@ export interface RebateRecordWithRelations extends RebateRecord {
   salesDept: SalesDept;
   budgetDept: BudgetDept;
   priceType: PriceType;
+  bigCategory: BigCategory;
+  middleCategory: MiddleCategory;
+  applicationType: ApplicationType;
   models: Model[];
 }
 
@@ -131,6 +167,9 @@ export interface RebateSearchParams {
   categoryId?: string;
   salesDeptId?: string;
   budgetDeptId?: string;
+  bigCategoryId?: string;
+  middleCategoryId?: string;
+  applicationTypeId?: string;
   modelIds?: string[];
   periodStart?: string;
   periodEnd?: string;
@@ -157,16 +196,18 @@ export interface CreateRebateRequest {
   categoryId: string;
   salesDeptId: string;
   budgetDeptId: string;
+  applicationTypeId: string;
+  bigCategoryId: string;
+  middleCategoryId: string;
   modelIds: string[];
   modelNames?: string;
   periodStart: string;
   periodEnd: string;
-  range: string;
   priceTypeId: string;
   price: number;
   quantity: number;
-  applicationType: string;
-  rebatePrice: number;
+  rebatePrice?: number;
+  rebateRate?: number;
   title: string;
   description?: string;
   comment?: string;

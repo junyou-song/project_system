@@ -6,6 +6,7 @@ import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { MSWComponent } from '@/components/MSWComponent';
 import { App, ConfigProvider, theme as antdTheme } from 'antd';
+import { LoadingProvider } from '@/contexts/LoadingContext';
 import zhCN from 'antd/locale/zh_CN';
 
 const geistSans = Geist({
@@ -48,6 +49,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ backgroundColor: BACKGROUND_COLOR }} // 应用全局背景色
       >
+      <LoadingProvider>
         <MSWComponent />
         <AntdRegistry>
           <ConfigProvider
@@ -109,6 +111,7 @@ export default function RootLayout({
             </App>
           </ConfigProvider>
         </AntdRegistry>
+        </LoadingProvider>
       </body>
     </html>
   );

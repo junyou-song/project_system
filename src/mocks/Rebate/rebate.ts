@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { db } from '../db';
-import { RebateSearchParams, CreateRebateRequest, UpdateRebateRequest, RebateStatus } from '@/types/rebate';
+import { RebateSearchParams, CreateRebateRequest, UpdateRebateRequest, RebateStatus } from '@/types/Rebate/rebate';
 
 // API基础路径
 const API_BASE_PATH = '/api';
@@ -17,6 +17,9 @@ export const rebateHandlers = [
       categoryId: url.searchParams.get('categoryId') || undefined,
       salesDeptId: url.searchParams.get('salesDeptId') || undefined,
       budgetDeptId: url.searchParams.get('budgetDeptId') || undefined,
+      bigCategoryId: url.searchParams.get('bigCategoryId') || undefined,
+      middleCategoryId: url.searchParams.get('middleCategoryId') || undefined,
+      applicationTypeId: url.searchParams.get('applicationTypeId') || undefined,
       periodStart: url.searchParams.get('periodStart') || undefined,
       periodEnd: url.searchParams.get('periodEnd') || undefined,
       status: url.searchParams.get('status') as RebateStatus || undefined,
@@ -77,10 +80,12 @@ export const rebateHandlers = [
       const currentModels = db.getModelByIds(body.modelIds)
       const modelNames = currentModels.map(model => model.name).join(';');
 
+      // 计算返利金额
+      // const rebateAmount = db.calculateRebateAmount(body);
+
       const newRebate = db.createRebate({
         ...body,
-        modelNames: modelNames,
-        rebateAmount: body.rebatePrice * body.quantity // 计算返利金额
+        modelNames: modelNames
       });
       
       return HttpResponse.json(newRebate, { status: 201 });
@@ -117,28 +122,15 @@ export const rebateHandlers = [
           updates.modelIds = updates.modelIds ? [updates.modelIds] : [];
       }
 
-      // if (body.modelIds && body.modelIds.length > 0) {
-      //   // 根据型号数组拿到所有的型号名
-      //   const currentModels = db.getModelByIds(body.modelIds)
-      //   const modelNames = currentModels.map(model => model.name).join(';');
-      //   updates.modelNames = modelNames;
-      // }
-
       // 处理modelIds的更新
       let currentModels  = [];
-      let modelNames = '';
       if (body.modelIds && Array.isArray(body.modelIds)) { // 确保存在且是数组
         currentModels = db.getModelByIds(body.modelIds);
-        modelNames = currentModels.map(model => model.name).join(';');
+        updates.modelNames = currentModels.map(model => model.name).join(';');
+      } else {
+        updates.modelNames = '';
       }
-      updates.modelNames = modelNames;
 
-      // 如果更新了价格或数量，重新计算返利金额
-      if ((body.rebatePrice !== undefined || body.quantity !== undefined) && body.rebateAmount === undefined) {
-        const rebatePrice = body.rebatePrice !== undefined ? body.rebatePrice : existingRebate.rebatePrice;
-        const quantity = body.quantity !== undefined ? body.quantity : existingRebate.quantity;
-        updates.rebateAmount = rebatePrice * quantity;
-      }
       
       const updatedRebate = db.updateRebate(id as string, updates);
       
@@ -226,8 +218,20 @@ export const rebateHandlers = [
     return HttpResponse.json(priceTypes);
   }),
 
-  // 获取所有产品型号
-  http.get(`${API_BASE_PATH}/models`, ({ request }) => {
+  // 获取所有申请类型
+  http.get(`${API_BASE_PATH}/applicationTypes`, ({ request }) => {
+    const url = new URL(request.url);
+    const isActive = url.searchParams.get('isActive') === 'true' ? true : 
+                     url.searchParams.get('isActive') === 'false' ? false : 
+                     undefined;
+      
+    const applicationtype = db.getApplicationTypes(isActive);
+      
+    return HttpResponse.json(applicationtype);
+  }),
+
+  // 获取所有的大分类
+  http.get(`${API_BASE_PATH}/bigCategories`, ({ request }) => {
     const url = new URL(request.url);
 
     // 解析查询参数
@@ -236,7 +240,39 @@ export const rebateHandlers = [
       url.searchParams.get('isActive') === 'false' ? false : undefined;
 
     // 获取型号数据
-    let models = db.getModels({ corporationId, isActive });
+    let bigCategories = db.getBigCategories({ corporationId, isActive });
+
+    return HttpResponse.json(bigCategories);
+  }),
+
+  // 获取所有的中分类
+  http.get(`${API_BASE_PATH}/middleCategories`, ({ request }) => {
+    const url = new URL(request.url);
+
+    // 解析查询参数
+    const bigCategoryId = url.searchParams.get('bigCategoryId') || undefined;
+    const isActive = url.searchParams.get('isActive') === 'true' ? true :
+      url.searchParams.get('isActive') === 'false' ? false : undefined;
+
+    // 获取型号数据
+    let middleCategories = db.getMiddleCategories({ bigCategoryId, isActive });
+
+    return HttpResponse.json(middleCategories);
+  }),
+
+  // 获取所有产品型号
+  http.get(`${API_BASE_PATH}/models`, ({ request }) => {
+    const url = new URL(request.url);
+
+    // 解析查询参数
+    const corporationId = url.searchParams.get('corporationId') || undefined;
+    const bigCategoryId = url.searchParams.get('bigCategoryId') || undefined;
+    const middleCategoryId = url.searchParams.get('middleCategoryId') || undefined;
+    const isActive = url.searchParams.get('isActive') === 'true' ? true :
+      url.searchParams.get('isActive') === 'false' ? false : undefined;
+
+    // 获取型号数据
+    let models = db.getModels({ corporationId, bigCategoryId, middleCategoryId, isActive });
 
     return HttpResponse.json(models);
   })

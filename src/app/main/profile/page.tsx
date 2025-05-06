@@ -1,14 +1,17 @@
 'use client';
-import React, { useState } from 'react';
-import { Card, Avatar, Typography, Divider, Tag, Row, Col, Timeline, Progress } from 'antd';
-import { UserOutlined, BankOutlined, PhoneOutlined, HomeOutlined, MailOutlined, BookOutlined, CodeOutlined, TrophyOutlined, TeamOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Card, Avatar, Typography, Tag, Row, Col, Timeline, Progress } from 'antd';
+import { UserOutlined, BankOutlined, PhoneOutlined, HomeOutlined, MailOutlined, CodeOutlined, TrophyOutlined, TeamOutlined } from '@ant-design/icons';
 import { personalInfo, education, skills, workExperience, projects, colors } from '@/data/resumeData';
 import CalendarOutlined from '@ant-design/icons/CalendarOutlined';
 import FadeIn from '@/components/transitions/FadeIn';
+import { useNavigation } from '@/hooks/useNavigation';
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function ProfilePage() {
+  const { navigateTo } = useNavigation();
+
   return (
     <>
       {/* 个人信息卡片 */}
