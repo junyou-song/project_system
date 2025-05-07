@@ -28,33 +28,40 @@ export const useNavigation = () => {
     };
       // Next.js没有内置的路由事件，但我们可以监听文档完成加载
       if (typeof window !== 'undefined') {
-        window.addEventListener('DOMContentLoaded', handleRouteComplete);
-        window.addEventListener('load', handleRouteComplete);
+        // window.addEventListener('DOMContentLoaded', handleRouteComplete);
+        // window.addEventListener('load', handleRouteComplete);
         
+        let domInactivityTimer: NodeJS.Timeout | null = null; // MutationObserver 的不活动计时器
         // 监听React的渲染完成
-        const observer = new MutationObserver((mutations) => {
-          // 检测DOM的显著变化可能意味着页面完成加载，不精确的判断检测
-          const significantChanges = mutations.some(mutation => 
-            mutation.addedNodes.length > 2 || mutation.removedNodes.length > 2);
-          
-          if (significantChanges) {
-            // 给一点缓冲时间确保页面渲染完成
-            setTimeout(() => setLoading(false), 100);
+        const observer = new MutationObserver(() => {
+          // 每当DOM变化时，清除并重置不活动计时器
+          if (domInactivityTimer) {
+            clearTimeout(domInactivityTimer);
           }
-        });
+          domInactivityTimer = setTimeout(() => {
+              // 在一段DOM“静默”期后，我们假设页面渲染已稳定
+              // 这个时间（假设 750ms）可以根据应用实际情况调整
+              requestAnimationFrame(() => { // 确保在下一个绘制周期执行
+                setLoading(false);
+              });
+            }, 300); // 例如，等待750毫秒的DOM静默期
+          });
         
         observer.observe(document.body, {
-          childList: true,
-          subtree: true,
-          attributes: false, // 减少不必要的触发
-          characterData: false // 减少不必要的触发
+          childList: true, // 监视子节点的添加或删除
+          subtree: true,   // 监视所有后代节点
+          attributes: false, // 通常我们不需要监视属性变化来判断加载状态
+          characterData: false // 也不需要监视字符数据变化
         });
         
         return () => {
-          window.removeEventListener('DOMContentLoaded', handleRouteComplete);
-          window.removeEventListener('load', handleRouteComplete);
+          // window.removeEventListener('DOMContentLoaded', handleRouteComplete);
+          // window.removeEventListener('load', handleRouteComplete);
           observer.disconnect();
-          
+          if (domInactivityTimer) {
+            clearTimeout(domInactivityTimer); // 清理不活动计时器
+          }
+
           // 清理计时器
           if (timerRef.current) {
             clearTimeout(timerRef.current);
@@ -109,14 +116,15 @@ export const useNavigation = () => {
       // 使用requestAnimationFrame检测路由变化后的DOM更新完成
       const detectRouteComplete = () => {
         if (typeof window !== 'undefined' && window.location.pathname === path) {
+          // URL 已经改变
+          // 如果有 onComplete 回调，则在下一个动画帧执行它
           // 路由已经变化，等待DOM完全渲染
-          setTimeout(() => {
-            setLoading(false);
-            // 执行完成回调
-            if (onComplete) onComplete();
-          }, 100);
+          if (onComplete) {
+            requestAnimationFrame(onComplete);
+          }
+          // setLoading(false) 的任务交给 useEffect 中的 MutationObserver 或上面的主超时 timerRef
         } else {
-          // 继续检测
+          // 如果路径还未改变，继续检测
           requestAnimationFrame(detectRouteComplete);
         }
       };
@@ -167,9 +175,9 @@ export const useNavigation = () => {
         // 检查路径是否发生了变化
         if (typeof window !== 'undefined' && window.location.pathname !== currentPath) {
           // 路由已经变化，等待DOM完全渲染
-          setTimeout(() => {
-            setLoading(false);
-          }, 100);
+          // setTimeout(() => {
+          //   setLoading(false);
+          // }, 100);
         } else {
           // 继续检测
           requestAnimationFrame(detectRouteChange);

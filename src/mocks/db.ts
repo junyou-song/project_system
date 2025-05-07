@@ -368,6 +368,26 @@ class MockDatabase {
       );
     }
 
+    // 在此处添加排序逻辑
+    if (params.sortBy && params.sortOrder) {
+      filteredRebates.sort((a, b) => {
+        const valA = a[params.sortBy as keyof RebateRecord];
+        const valB = b[params.sortBy as keyof RebateRecord];
+
+        if (valA === undefined || valB === undefined) return 0; // 或者根据需要处理 undefined
+
+        let comparison = 0;
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          comparison = valA.localeCompare(valB);
+        } else if (typeof valA === 'number' && typeof valB === 'number') {
+          comparison = valA - valB;
+        }
+        // 可以根据需要添加对其他类型的处理，例如日期
+
+        return params.sortOrder === 'desc' ? comparison * -1 : comparison;
+      });
+    }
+
     // 计算分页
     const page = params.page || 1;
     const pageSize = params.pageSize || 10;
@@ -389,6 +409,14 @@ class MockDatabase {
         const middleCategory = this.getMiddleCategoryById(rebate.middleCategoryId);
         const models = this.getModelByIds(rebate.modelIds);
         const applicationType = this.getApplicationTypeById(rebate.applicationTypeId);
+
+        // 新增校验：检查 models 数组是否成功加载了所有请求的模型
+        if (models.length !== rebate.modelIds.length) {
+          const missingModelIds = rebate.modelIds.filter(id => !models.find(m => m.id === id));
+          console.warn(`ID 为 ${rebate.id} 的返利记录的部分 modelIds 在数据库中未找到。预期 ${rebate.modelIds.length} 个，实际找到 ${models.length} 个。缺失的 Model IDs: ${missingModelIds.join(', ')}`);
+          // 注意：如果模型不完整则跳过该条返利记录，可以取消下面一行的注释
+          // return null;
+        }
 
         if (!corporation || !category || !salesDept || !budgetDept || !priceType || !bigCategory || !middleCategory || !applicationType ) {
 

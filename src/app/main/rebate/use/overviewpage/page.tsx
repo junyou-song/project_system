@@ -69,6 +69,8 @@ function RebateOverviewPage() {
     applicantId: undefined,
     title: undefined,
     priceTypeId: undefined,
+    sortBy: 'applicationNumber',
+    sortOrder: 'desc',
     page: 1,
     pageSize: 10
   });
@@ -87,6 +89,8 @@ function RebateOverviewPage() {
     applicantId: undefined,
     title: undefined,
     priceTypeId: undefined,
+    sortBy: 'applicationNumber',
+    sortOrder: 'desc',
     page: 1,
     pageSize: 10
   });
@@ -198,12 +202,17 @@ function RebateOverviewPage() {
   
   // 搜索处理 - 将表单值同步到搜索参数
   const handleSearch = () => {
-    setSearchParams({ ...formValues, page: 1 }); // 重置到第一页并使用表单值更新搜索参数
+    setSearchParams({ 
+      ...formValues, 
+      sortBy: 'applicationNumber',
+      sortOrder: 'desc',
+      page: 1 
+    });
   };
   
   // 重置处理
   const handleReset = () => {
-    const resetValues = {
+    const resetValues: RebateSearchParams = {
       applicationNumber: undefined,
       corporationId: undefined,
       categoryId: undefined,
@@ -215,12 +224,14 @@ function RebateOverviewPage() {
       applicantId: undefined,
       title: undefined,
       priceTypeId: undefined,
+      sortBy: 'applicationNumber',
+      sortOrder: 'desc',
       page: 1,
       pageSize: 10
     };
     
-    setFormValues(resetValues); // 重置表单值
-    setSearchParams(resetValues); // 重置搜索参数并触发查询
+    setFormValues(resetValues);
+    setSearchParams(resetValues);
   };
   
   // 刷新处理
@@ -420,11 +431,15 @@ function RebateOverviewPage() {
       key: 'period',
       width: 180,
       ellipsis: false,
-      render: (_, record) => (
-        <div style={{ whiteSpace: 'nowrap' }}>
-          {record.periodStart}-{record.periodEnd}
-        </div>
-      ),
+      render: (_, record) => {
+        const startDate = record.periodStart ? dayjs(record.periodStart).format('YYYY/MM/DD') : 'N/A';
+        const endDate = record.periodEnd ? dayjs(record.periodEnd).format('YYYY/MM/DD') : 'N/A';
+        return (
+          <div style={{ whiteSpace: 'nowrap' }}>
+            {startDate}-{endDate}
+          </div>
+        );
+      },
     },
     {
       title: '价格类型',
@@ -1083,6 +1098,7 @@ function RebateOverviewPage() {
             dataSource={rebates}
             columns={responsiveColumns}
             loading={loading}
+            sortDirections = {['ascend', 'descend']}
             pagination={{ 
               position: ['bottomCenter'],
               showSizeChanger: true,

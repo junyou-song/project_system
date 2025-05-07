@@ -542,5 +542,21 @@
     "bigCategoryId": "big-025",
     "description": "水质软化处理设备",
     "isActive": true
+  },
+  {
+    "id": "mid-069",
+    "name": "办公椅 (先锋家居)",
+    "code": "BGY-XF",
+    "bigCategoryId": "big-026",
+    "description": "先锋家居的办公椅系列",
+    "isActive": true
+  },
+  {
+    "id": "mid-070",
+    "name": "办公桌 (先锋家居)",
+    "code": "BGZ-XF",
+    "bigCategoryId": "big-026",
+    "description": "先锋家居的办公桌系列",
+    "isActive": true
   }
 ]

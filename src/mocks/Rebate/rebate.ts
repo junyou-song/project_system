@@ -26,6 +26,8 @@ export const rebateHandlers = [
       applicantId: url.searchParams.get('applicantId') || undefined,
       title: url.searchParams.get('title') || undefined,
       priceTypeId: url.searchParams.get('priceTypeId') || undefined,
+      sortBy: url.searchParams.get('sortBy') || undefined,
+      sortOrder: url.searchParams.get('sortOrder') as 'asc' | 'desc' || undefined,
       page: url.searchParams.get('page') ? parseInt(url.searchParams.get('page') as string) : 1,
       pageSize: url.searchParams.get('pageSize') ? parseInt(url.searchParams.get('pageSize') as string) : 10
     };
