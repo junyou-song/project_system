@@ -1,0 +1,32 @@
+[
+  {
+    "id": "detail-001",
+    "rebateApplicationMainId": "main-001",
+    "applicationTypeId": "app-001",
+    "bigCategoryId": "bc-001",
+    "middleCategoryId": "mc-001",
+    "modelId": "model-001",
+    "priceTypeId": "pt-001",
+    "price": 1500,
+    "quantity": 10,
+    "rebatePrice": 50,
+    "rebateRate": null,
+    "itemRebateAmount": 500,
+    "comment": "型号model-001，按单价返利"
+  },
+  {
+    "id": "detail-002",
+    "rebateApplicationMainId": "main-001",
+    "applicationTypeId": "app-002",
+    "bigCategoryId": "bc-001",
+    "middleCategoryId": "mc-001",
+    "modelId": "model-002",
+    "priceTypeId": "pt-001",
+    "price": 2000,
+    "quantity": 5,
+    "rebatePrice": null,
+    "rebateRate": 0.05,
+    "itemRebateAmount": 500,
+    "comment": "型号model-002，按返利率返利"
+  }
+] 

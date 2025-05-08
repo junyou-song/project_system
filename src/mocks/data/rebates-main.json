@@ -1,0 +1,22 @@
+[
+  {
+    "id": "main-001",
+    "applicationNumber": "L202407001",
+    "corporationId": "corp-001",
+    "categoryId": "cat-002",
+    "salesDeptId": "sales-001",
+    "budgetDeptId": "budget-001",
+    "periodStart": "2024-07-01T00:00:00.000Z",
+    "periodEnd": "2024-07-31T23:59:59.000Z",
+    "title": "7月大客户专项返利",
+    "description": "针对特定大客户的7月份专项返利政策",
+    "applicantId": "user-001",
+    "applicantName": "HJS SFA Admin",
+    "status": "draft",
+    "createdAt": "2024-07-15T10:00:00.000Z",
+    "updatedAt": "2024-07-15T10:00:00.000Z",
+    "totalRebateAmount": 0,
+    "modelIds": ["model-001", "model-002"],
+    "modelNames": "SNB-ECO-18，XRB-FRMDF-15"
+  }
+]

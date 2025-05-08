@@ -1,6 +1,11 @@
 import { http, HttpResponse } from 'msw';
 import { db } from '../db';
-import { RebateSearchParams, CreateRebateRequest, UpdateRebateRequest, RebateStatus } from '@/types/Rebate/rebate';
+import { 
+  RebateSearchParams, 
+  CreateRebateRequest, 
+  UpdateRebateWithDetailsRequest,
+  RebateStatus,
+} from '@/types/Rebate/rebate';
 
 // API基础路径
 const API_BASE_PATH = '/api';
@@ -10,38 +15,29 @@ export const rebateHandlers = [
   http.get(`${API_BASE_PATH}/rebates`, ({ request }) => {
     const url = new URL(request.url);
     
-    // 解析查询参数
     const params: RebateSearchParams = {
       applicationNumber: url.searchParams.get('applicationNumber') || undefined,
       corporationId: url.searchParams.get('corporationId') || undefined,
       categoryId: url.searchParams.get('categoryId') || undefined,
       salesDeptId: url.searchParams.get('salesDeptId') || undefined,
       budgetDeptId: url.searchParams.get('budgetDeptId') || undefined,
-      bigCategoryId: url.searchParams.get('bigCategoryId') || undefined,
-      middleCategoryId: url.searchParams.get('middleCategoryId') || undefined,
-      applicationTypeId: url.searchParams.get('applicationTypeId') || undefined,
       periodStart: url.searchParams.get('periodStart') || undefined,
       periodEnd: url.searchParams.get('periodEnd') || undefined,
       status: url.searchParams.get('status') as RebateStatus || undefined,
       applicantId: url.searchParams.get('applicantId') || undefined,
       title: url.searchParams.get('title') || undefined,
-      priceTypeId: url.searchParams.get('priceTypeId') || undefined,
       sortBy: url.searchParams.get('sortBy') || undefined,
       sortOrder: url.searchParams.get('sortOrder') as 'asc' | 'desc' || undefined,
       page: url.searchParams.get('page') ? parseInt(url.searchParams.get('page') as string) : 1,
       pageSize: url.searchParams.get('pageSize') ? parseInt(url.searchParams.get('pageSize') as string) : 10
     };
 
-    // 处理型号数组参数
-    // URL查询参数中，数组通常以重复参数的形式传递，例如：?modelIds=id1&modelIds=id2
     const modelIdsParams = url.searchParams.getAll('modelIds');
     if (modelIdsParams && modelIdsParams.length > 0) {
       params.modelIds = modelIdsParams;
     }
 
-    // 查询数据
     const result = db.searchRebates(params);
-    
     return HttpResponse.json(result);
   }),
 
@@ -73,24 +69,10 @@ export const rebateHandlers = [
     const body = await request.json() as CreateRebateRequest;
     
     try {
-      // 确保modelIds是数组
-      if (!Array.isArray(body.modelIds)) {
-        body.modelIds = body.modelIds ? [body.modelIds] : [];
-      }
-
-      // 根据型号数组拿到所有的型号
-      const currentModels = db.getModelByIds(body.modelIds)
-      const modelNames = currentModels.map(model => model.name).join(';');
-
-      // 计算返利金额
-      // const rebateAmount = db.calculateRebateAmount(body);
-
-      const newRebate = db.createRebate({
-        ...body,
-        modelNames: modelNames
-      });
+      // db.createRebate 现在处理主表和子表的创建，并返回带关联的主表
+      const newRebateWithRelations = db.createRebate(body);
       
-      return HttpResponse.json(newRebate, { status: 201 });
+      return HttpResponse.json(newRebateWithRelations, { status: 201 });
     } catch (error) {
       return HttpResponse.json(
         { message: '创建返利申请失败', error: (error as Error).message },
@@ -102,9 +84,10 @@ export const rebateHandlers = [
   // 更新返利申请
   http.put(`${API_BASE_PATH}/rebates/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = await request.json() as UpdateRebateRequest;
+    // 请求体现在是 UpdateRebateWithDetailsRequest
+    const body = await request.json() as UpdateRebateWithDetailsRequest;
     
-    // 检查记录是否存在
+    // 检查记录是否存在 (db.updateRebateWithDetails 内部也会检查，但这里可以提前返回404)
     const existingRebate = db.getRebateById(id as string);
     if (!existingRebate) {
       return HttpResponse.json(
@@ -114,29 +97,32 @@ export const rebateHandlers = [
     }
     
     try {
-      
-      let updates = { ...body };
-
-      // 处理modelIds的更新
-      // 确保modelIds是数组
-      if (body.modelIds) {
-        if (!Array.isArray(updates.modelIds))
-          updates.modelIds = updates.modelIds ? [updates.modelIds] : [];
+      // 确保请求体中的 id 与路径参数的 id 一致 (或者 UpdateRebateWithDetailsRequest 不包含 id)
+      // 我们的 UpdateRebateWithDetailsRequest 定义中包含了 id，所以可以进行校验
+      if (body.id && body.id !== (id as string)) {
+        return HttpResponse.json(
+          { message: '请求体中的ID与路径参数ID不匹配' },
+          { status: 400 }
+        );
       }
 
-      // 处理modelIds的更新
-      let currentModels  = [];
-      if (body.modelIds && Array.isArray(body.modelIds)) { // 确保存在且是数组
-        currentModels = db.getModelByIds(body.modelIds);
-        updates.modelNames = currentModels.map(model => model.name).join(';');
-      } else {
-        updates.modelNames = '';
+      // 如果 body.id 不存在，则使用路径中的 id
+      const requestData: UpdateRebateWithDetailsRequest = {
+        ...body,
+        id: id as string 
+      };
+      
+      const updatedRebateWithRelations = db.updateRebateWithDetails(requestData);
+      
+      if (!updatedRebateWithRelations) {
+        // 这种情况理论上在上面的 existingRebate 检查后不太会发生，除非 db 内部逻辑问题
+        return HttpResponse.json(
+          { message: '更新返利申请失败，记录可能已被删除' },
+          { status: 404 } 
+        );
       }
-
       
-      const updatedRebate = db.updateRebate(id as string, updates);
-      
-      return HttpResponse.json(updatedRebate);
+      return HttpResponse.json(updatedRebateWithRelations);
     } catch (error) {
       return HttpResponse.json(
         { message: '更新返利申请失败', error: (error as Error).message },

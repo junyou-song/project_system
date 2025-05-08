@@ -1,10 +1,10 @@
 import {
-  RebateRecord,
-  RebateRecordWithRelations,
+  RebateApplicationMain,
+  RebateApplicationMainWithRelations,
   RebateSearchParams,
   PaginatedResult,
   CreateRebateRequest,
-  UpdateRebateRequest,
+  UpdateRebateWithDetailsRequest,
   Corporation,
   Category,
   SalesDept,
@@ -14,7 +14,8 @@ import {
   RebateStatus,
   RebateStats,
   BigCategory,
-  MiddleCategory
+  MiddleCategory,
+  ApplicationType
 } from '@/types/Rebate/rebate'; // 确保类型文件路径正确
 
 // API 基础 URL (建议从环境变量或配置文件读取)
@@ -45,7 +46,7 @@ export const rebateService = {
   /**
    * [私有] 核心 Fetch 辅助函数
    * 封装了 fetch 调用、错误检查、JSON 解析和无内容响应处理
-   * @template T - 调用者期望的成功响应数据的类型 (例如 RebateRecord[], RebateStats)
+   * @template T - 调用者期望的成功响应数据的类型 (例如 RebateApplicationMain[], RebateStats)
    * @param path API 路径 (例如 '/rebates', '/corporations')
    * @param options Fetch 的选项 (method, headers, body 等)，默认为空对象 {}
    * @param errorMessagePrefix 错误消息前缀，用于生成更具体的错误信息，默认为 '操作'
@@ -113,27 +114,27 @@ export const rebateService = {
   /**
      * 获取返利申请列表 (分页、过滤)
      * @param params 包含过滤条件和分页信息 (如 page, pageSize) 的对象
-     * @returns Promise<PaginatedResult<RebateRecordWithRelations>> - 返回一个包含返利列表数据和分页信息的 Promise
+     * @returns Promise<PaginatedResult<RebateApplicationMainWithRelations>> - 返回一个包含返利列表数据和分页信息的 Promise
   */
-  async getRebates(params: RebateSearchParams): Promise<PaginatedResult<RebateRecordWithRelations>> {
+  async getRebates(params: RebateSearchParams): Promise<PaginatedResult<RebateApplicationMainWithRelations>> {
     const queryString = buildQueryString(params);
     // 假设 PaginatedResult 总是对象结构，如果 API 可能返回空，需要处理
-    return await this._fetchApi<PaginatedResult<RebateRecordWithRelations>>(`/rebates${queryString}`, { method: 'GET' }, '获取返利申请列表');
+    return await this._fetchApi<PaginatedResult<RebateApplicationMainWithRelations>>(`/rebates${queryString}`, { method: 'GET' }, '获取返利申请列表');
   },
 
   /**
    * 获取返利申请详情
    */
-  async getRebateById(id: string): Promise<RebateRecordWithRelations> {
+  async getRebateById(id: string): Promise<RebateApplicationMainWithRelations> {
     if (!id) throw new Error('获取返利申请详情失败：未提供 ID');
-    return await this._fetchApi<RebateRecordWithRelations>(`/rebates/${id}`, { method: 'GET' }, '获取返利申请详情');
+    return await this._fetchApi<RebateApplicationMainWithRelations>(`/rebates/${id}`, { method: 'GET' }, '获取返利申请详情');
   },
 
   /**
    * 创建返利申请
    */
-  async createRebate(data: CreateRebateRequest): Promise<RebateRecord> {
-    return await this._fetchApi<RebateRecord>('/rebates', {
+  async createRebate(data: CreateRebateRequest): Promise<RebateApplicationMainWithRelations> {
+    return await this._fetchApi<RebateApplicationMainWithRelations>('/rebates', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -141,14 +142,15 @@ export const rebateService = {
   },
 
   /**
-   * 更新返利申请
+   * 更新返利申请 (包括主表和子表明细)
+   * @param data 包含要更新的返利申请主表ID、主表字段及子表操作列表。
    */
-  async updateRebate(id: string, data: Omit<UpdateRebateRequest, 'id'>): Promise<RebateRecord> {
-    if (!id) throw new Error('更新返利申请失败：未提供 ID');
-    return await this._fetchApi<RebateRecord>(`/rebates/${id}`, {
+  async updateRebate(data: UpdateRebateWithDetailsRequest): Promise<RebateApplicationMainWithRelations> {
+    if (!data.id) throw new Error('更新返利申请失败：请求数据中未提供返利申请主表 ID');
+    return await this._fetchApi<RebateApplicationMainWithRelations>(`/rebates/${data.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data) // 发送整个 UpdateRebateWithDetailsRequest 对象
     }, '更新返利申请');
   },
 
@@ -222,6 +224,7 @@ export const rebateService = {
     }
     return this._fetchList<PriceType>('/priceTypes', params, '价格类型数据');
   },
+  
   /**
    * 获取大分类列表 (统一入口)
    * @param corporationId - 法人 ID，用于筛选大分类列表
@@ -246,5 +249,17 @@ export const rebateService = {
    */
   async getModels(params?: { corporationId?: string; bigCategoryId?: string; middleCategoryId?: string; isActive?: boolean }): Promise<Model[]> {
     return this._fetchList<Model>('/models', params || {}, '产品型号数据');
+  },
+
+  /**
+   * 获取所有申请类型
+   * @param isActive 可选，用于筛选是否活动的申请类型
+   */
+  async getApplicationTypes(isActive?: boolean): Promise<ApplicationType[]> {
+    const params: Record<string, any> = {};
+    if (isActive !== undefined) {
+      params.isActive = isActive;
+    }
+    return this._fetchList<ApplicationType>('/applicationTypes', params, '申请类型数据');
   }
 };

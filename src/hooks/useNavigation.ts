@@ -44,7 +44,7 @@ export const useNavigation = () => {
               requestAnimationFrame(() => { // 确保在下一个绘制周期执行
                 setLoading(false);
               });
-            }, 300); // 例如，等待750毫秒的DOM静默期
+            }, 750); // 例如，等待750毫秒的DOM静默期
           });
         
         observer.observe(document.body, {

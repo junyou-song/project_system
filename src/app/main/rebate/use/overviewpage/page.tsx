@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Typography, 
   Card, 
@@ -32,7 +32,7 @@ import locale from 'antd/es/date-picker/locale/zh_CN';
 import dayjs from 'dayjs';
 import { rebateService } from '@/services/rebateService';
 import { 
-  RebateRecordWithRelations, 
+  RebateApplicationMainWithRelations,
   RebateSearchParams, 
   RebateStatus,
   RebateStatusText,
@@ -40,8 +40,8 @@ import {
   Category,
   SalesDept,
   BudgetDept,
-  PriceType,
-  Model
+  Model,
+  ApplicationType
 } from '@/types/Rebate/rebate';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/hooks/useNavigation';
@@ -68,7 +68,6 @@ function RebateOverviewPage() {
     status: undefined,
     applicantId: undefined,
     title: undefined,
-    priceTypeId: undefined,
     sortBy: 'applicationNumber',
     sortOrder: 'desc',
     page: 1,
@@ -88,14 +87,13 @@ function RebateOverviewPage() {
     status: undefined,
     applicantId: undefined,
     title: undefined,
-    priceTypeId: undefined,
     sortBy: 'applicationNumber',
     sortOrder: 'desc',
     page: 1,
     pageSize: 10
   });
   
-  const [rebates, setRebates] = useState<RebateRecordWithRelations[]>([]);
+  const [rebates, setRebates] = useState<RebateApplicationMainWithRelations[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [statsLoading, setStatsLoading] = useState(false);
@@ -114,20 +112,18 @@ function RebateOverviewPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [salesDepts, setSalesDepts] = useState<SalesDept[]>([]);
   const [budgetDepts, setBudgetDepts] = useState<BudgetDept[]>([]);
-  const [priceTypes, setPriceTypes] = useState<PriceType[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   
   // 加载下拉选项数据
   useEffect(() => {
     const loadLookupData = async () => {
       try {
-        const [corporationsData, categoriesData, salesDeptsData, budgetDeptsData, priceTypesData, ModelsData] = 
+        const [corporationsData, categoriesData, salesDeptsData, budgetDeptsData, ModelsData] = 
           await Promise.all([
             rebateService.getCorporations(true),
             rebateService.getCategories(true),
             rebateService.getSalesDepts(true),
             rebateService.getBudgetDepts(true),
-            rebateService.getPriceTypes(true),
             rebateService.getModels({isActive:true}) // 初始化获取所有的产品型号
           ]);
         
@@ -135,7 +131,6 @@ function RebateOverviewPage() {
         setCategories(categoriesData);
         setSalesDepts(salesDeptsData);
         setBudgetDepts(budgetDeptsData);
-        setPriceTypes(priceTypesData);
         setModels(ModelsData);
       } catch (error) {
         console.error('加载下拉选项数据失败:', error);
@@ -218,12 +213,12 @@ function RebateOverviewPage() {
       categoryId: undefined,
       salesDeptId: undefined,
       budgetDeptId: undefined,
+      modelIds: undefined,
       periodStart: undefined,
       periodEnd: undefined,
       status: undefined,
       applicantId: undefined,
       title: undefined,
-      priceTypeId: undefined,
       sortBy: 'applicationNumber',
       sortOrder: 'desc',
       page: 1,
@@ -275,22 +270,22 @@ function RebateOverviewPage() {
   };
   
   // 处理新建返利申请
-  const handleNavigateToNewRebate = () => {
+  const handleNavigateToNewRebate = useCallback(() => {
     navigateTo('/main/rebate/use/new', { 
       loadingMessage: '正在准备创建返利申请...',
-      timeout: 1000 // 限制最大加载时间为1秒
+      timeout: 1000
     });
-  };
+  }, [navigateTo]);
   
   // 处理查看返利详情
-  const handleNavigateToDetail = (id: string) => {
+  const handleNavigateToDetail = useCallback((id: string) => {
     navigateTo(`/main/rebate/use/detail/${id}`, { 
       loadingMessage: '正在加载返利详情...'
     });
-  };
+  }, [navigateTo]);
   
-  // 表格列定义
-  const columns: ColumnsType<RebateRecordWithRelations> = [
+  // 表格列定义 - 使用 useMemo
+  const columns: ColumnsType<RebateApplicationMainWithRelations> = useMemo(() => [
     {
       title: '',
       dataIndex: 'checkbox',
@@ -315,9 +310,7 @@ function RebateOverviewPage() {
       dataIndex: ['corporation', 'name'],
       key: 'corporation',
       width: 120,
-      ellipsis: {
-        showTitle: false,
-      },
+      ellipsis: { showTitle: false },
       render: (text) => (
         <Tooltip placement="topLeft" title={text}>
           {text}
@@ -345,22 +338,11 @@ function RebateOverviewPage() {
       width: 120,
       ellipsis: false,
       render: (text: string) => {
-        // 使用与状态标签不同的颜色体系 - 使用更柔和的颜色
         const colorMap: Record<string, string> = {
-          '国内': '#13c2c2',
-          '国外': '#722ed1',
-          '直销': '#eb2f96',
-          '电商': '#2f54eb',
-          '批发': '#fa8c16',
-          '代理': '#1890ff',
-          '渠道': '#faad14',
-          '零售': '#52c41a'
+          '国内': '#13c2c2', '国外': '#722ed1', '直销': '#eb2f96', '电商': '#2f54eb', '批发': '#fa8c16', '代理': '#1890ff', '渠道': '#faad14', '零售': '#52c41a'
         };
-        
-        // 为未定义的值使用固定的颜色数组，确保颜色区分度
         const colorArray = ['#13c2c2', '#722ed1', '#2f54eb', '#eb2f96', '#fa541c', '#fadb14', '#a0d911', '#1890ff'];
         const color = colorMap[text] || colorArray[text.length % colorArray.length];
-        
         return <Tag color={color} style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{text}</Tag>;
       }
     },
@@ -379,52 +361,18 @@ function RebateOverviewPage() {
       ),
     },
     {
-      title: '大分类',
-      dataIndex: ['bigCategory', 'name'],
-      key: 'bigCategory',
-      width: 120,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
-        </Tooltip>
-      ),
-    },
-    {
-      title: '中分类',
-      dataIndex: ['middleCategory', 'name'],
-      key: 'middleCategory',
-      width: 120,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
-        </Tooltip>
-      ),
-    },
-    {
-      title: '型号',
-      dataIndex: ['models'],
-      key: 'models',
+      title: '型号 (汇总)',
+      dataIndex: 'modelNames',
+      key: 'modelNames',
       width: 150,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (models) => {
-        if (!models || models.length === 0) return '-';
-        const text = models.map((model: { code: string }) => model.code).join(';');
-        return (
-          <Tooltip placement="topLeft" title={text}>
-            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {text}
-            </div>
-          </Tooltip>
-        );
-      }
+      ellipsis: { showTitle: false },
+      render: (text: string) => (
+        <Tooltip placement="topLeft" title={text}>
+          <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {text || '-'}
+          </div>
+        </Tooltip>
+      )
     },
     {
       title: '返利期间',
@@ -442,88 +390,14 @@ function RebateOverviewPage() {
       },
     },
     {
-      title: '价格类型',
-      dataIndex: ['priceType', 'name'],
-      key: 'priceType',
-      width: 140,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (text: string, record) => (
-        <Tooltip placement="topLeft" title={`${text}是指${record.priceType?.description || '当前产品的价格类型'}`}>
-          <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {text} 
-            <InfoCircleOutlined style={{ marginLeft: 4, color: '#1677ff', fontSize: 12, cursor: 'pointer', flexShrink: 0 }} />
-          </div>
-        </Tooltip>
-      )
-    },
-    {
-      title: '价格',
-      dataIndex: 'price',
-      key: 'price',
-      width: 80,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
-        </Tooltip>
-      )
-    },
-    {
-      title: '数量',
-      dataIndex: 'quantity',
-      key: 'quantity',
-      width: 80,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
-        </Tooltip>
-      )
-    },
-    {
-      title: '返利值',
-      key: 'rebateValue',
-      width: 120,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (_, record) => {
-        // 根据申请类型ID判断显示返利单价还是返利率
-        if (record.applicationType?.id === 'app-001') { // 单价申请
-          return (
-            <Tooltip placement="topLeft" title={`${record.rebatePrice || 0}(元)`}>
-              {`${record.rebatePrice || 0}(元)`}
-            </Tooltip>
-          );
-        } else if (record.applicationType?.id === 'app-002') { // 返利率申请
-          // 返利率通常以百分比形式显示
-          const rateValue = record.rebateRate ? (record.rebateRate / 100) : 0;
-          return (
-            <Tooltip placement="topLeft" title={`${rateValue}%`}>
-              {`${rateValue}(%)`}
-            </Tooltip>
-          );
-        }
-        return '-'; // 默认显示
-      },
-    },
-    {
-      title: '申请金额',
-      dataIndex: 'rebateAmount',
-      key: 'rebateAmount',
+      title: '申请总金额',
+      dataIndex: 'totalRebateAmount',
+      key: 'totalRebateAmount',
       width: 100,
-      ellipsis: {
-        showTitle: false,
-      },
+      ellipsis: { showTitle: false },
       render: (text) => (
-        <Tooltip placement="topLeft" title={text}>
-          {text}
+        <Tooltip placement="topLeft" title={text !== undefined && text !== null ? text.toString() : '-'}>
+          {text !== undefined && text !== null ? text.toString() : '-'}
         </Tooltip>
       )
     },
@@ -532,9 +406,7 @@ function RebateOverviewPage() {
       dataIndex: 'title',
       key: 'title',
       width: 150,
-      ellipsis: {
-        showTitle: false,
-      },
+      ellipsis: { showTitle: false },
       render: (text: string) => (
         <Tooltip placement="topLeft" title={text}>
           <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -544,23 +416,11 @@ function RebateOverviewPage() {
       )
     },
     {
-      title: '备注',
-      key: 'comment',
-      width: 60,
-      render: (_, record) => record.comment ? (
-        <Tooltip title={record.comment}>
-          <FileTextOutlined style={{ color: '#1677ff', cursor: 'pointer' }} />
-        </Tooltip>
-      ) : null
-    },
-    {
       title: '申请人',
       dataIndex: 'applicantName',
       key: 'applicantName',
       width: 120,
-      ellipsis: {
-        showTitle: false,
-      },
+      ellipsis: { showTitle: false },
       render: (text) => (
         <Tooltip placement="topLeft" title={text}>
           {text}
@@ -585,46 +445,19 @@ function RebateOverviewPage() {
         return <Tag color={colorMap[status]} style={{ whiteSpace: 'nowrap' }}>{RebateStatusText[status]}</Tag>;
       }
     },
-  ];
+  ], [handleNavigateToDetail]); // 依赖于 handleNavigateToDetail
 
-  // 创建响应式列配置
-  const getResponsiveColumns = () => {
-    // 获取窗口宽度
-    if (typeof window !== 'undefined') {
-      const windowWidth = window.innerWidth;
-      
-      // 根据窗口宽度返回不同的列配置
-      if (windowWidth < 1200) {
-        // 移除部分次要列，保留重要列
-        return columns.filter(col => 
-          col.key !== 'price' && 
-          col.key !== 'quantity' && 
-          col.key !== 'rebateAmount' && 
-          col.key !== 'applicationType'
-        );
-      }
-    }
-    
-    return columns;
-  };
+  const getResponsiveColumns = useCallback(() => {
+    return columns; // 简化：直接返回记忆化的 columns
+  }, [columns]); // 依赖于记忆化的 columns
 
-  // 使用状态保存响应式列
   const [responsiveColumns, setResponsiveColumns] = useState(columns);
 
-  // 监听窗口大小变化
   useEffect(() => {
-    const handleResize = () => {
-      setResponsiveColumns(getResponsiveColumns());
-    };
-
-    // 初始设置
-    handleResize();
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
+    // responsiveColumns 现在依赖于记忆化后的 columns
+    // getResponsiveColumns 也是记忆化的，所以这个 useEffect 的依赖也变得稳定
+    setResponsiveColumns(getResponsiveColumns());
+  }, [columns, getResponsiveColumns]); // 当 columns 本身变化时（理论上只有一次或当其依赖变化时）
 
   return (
     <div className="rebate-overview-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F5F5F5', padding: '0 0 24px' }}>
@@ -903,28 +736,8 @@ function RebateOverviewPage() {
                     suffixIcon={<SearchOutlined style={{ color: '#bfbfbf', fontSize: 12 }} />}
                   >
                     {Object.entries(RebateStatusText).map(([status, text]) => (
-                      <Option key={status} value={status}>
+                      <Option key={status} value={status as RebateStatus}>
                         {text}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8} lg={6} xl={4}>
-                <Form.Item
-                  label="价格类型"
-                  style={{ marginBottom: 12 }}
-                >
-                  <Select
-                    placeholder="选择价格类型"
-                    value={formValues.priceTypeId}
-                    onChange={(value) => setFormValues({ ...formValues, priceTypeId: value })}
-                    allowClear
-                    suffixIcon={<SearchOutlined style={{ color: '#bfbfbf', fontSize: 12 }} />}
-                  >
-                    {priceTypes.map((type) => (
-                      <Option key={type.id} value={type.id}>
-                        {type.name}
                       </Option>
                     ))}
                   </Select>
