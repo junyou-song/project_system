@@ -26,7 +26,7 @@ export const useNavigation = () => {
     const handleRouteComplete = () => {
       setLoading(false);
     };
-      // Next.js没有内置的路由事件，但我们可以监听文档完成加载
+    // 由于Next.js没有内置的路由事件，所以这里通过监听文档完成加载来判断页面是否加载完成，目前还有Bug，需要优化，是否加载成功判断很不精准
       if (typeof window !== 'undefined') {
         // window.addEventListener('DOMContentLoaded', handleRouteComplete);
         // window.addEventListener('load', handleRouteComplete);
@@ -44,7 +44,7 @@ export const useNavigation = () => {
               requestAnimationFrame(() => { // 确保在下一个绘制周期执行
                 setLoading(false);
               });
-            }, 750); // 例如，等待750毫秒的DOM静默期
+            }, 1000); // 例如，等待750毫秒的DOM静默期
           });
         
         observer.observe(document.body, {

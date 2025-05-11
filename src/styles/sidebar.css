@@ -132,12 +132,12 @@
   display: none;
 }
 
-/* 收起时图标居中 */
+/* 收起时图标居中 
 .custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-item,
 .custom-sidebar-menu .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title {
-  padding: 0 calc(50% - 10px) !important; /* (宽度80/2) - (图标20/2) = 30px */
-  margin: 8px auto !important; /* 上下外边距，左右自动居中 */
-}
+  padding: 0 calc(50% - 10px) !important;  (宽度80/2) - (图标20/2) = 30px 
+  margin: 8px auto !important; 上下外边距，左右自动居中 
+} */
 
 /* 收起时移除图标右边距 */
 .custom-sidebar-menu .ant-menu-inline-collapsed .anticon {
@@ -193,14 +193,14 @@
     padding: 0 !important; /* 移除默认padding */
 }
 
-/* 针对圆形按钮的额外尺寸修正 (如果需要) */
+/* 针对圆形按钮的额外尺寸修正 (如果需要)
 .sidebar-collapse-button.ant-btn-icon-only {
     width: 32px !important;
     height: 32px !important;
-}
+} */
 
 /* 按钮内图标大小 */
-.sidebar-collapse-button .anticon {
+/* .sidebar-collapse-button .anticon {
     font-size: 16px !important; /* 图标大小 */
-    margin-right: 0 !important; /* 移除图标可能继承的margin */
-} 
+    /* margin-right: 0 !important; 移除图标可能继承的margin */ 
+/* } */

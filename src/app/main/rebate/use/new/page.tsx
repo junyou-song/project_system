@@ -615,7 +615,7 @@ function RebateNewPage() {
           size="small"
         >
           <Form 
-            form={form}
+            form={ form }
             layout="vertical"
             onValuesChange={handleFormValuesChange}
             initialValues={{

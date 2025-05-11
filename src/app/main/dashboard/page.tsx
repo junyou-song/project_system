@@ -108,7 +108,7 @@ export default function DashboardPage() {
                         background: '#f5f5f5',
                         border: 'none'
                       }}
-                      bodyStyle={{ padding: 16 }}
+                      styles={{body:{padding: 16}}}
                     >
                       <Space>
                         <Avatar 
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                     borderRadius: 12,
                     overflow: 'hidden'
                   }}
-                  bodyStyle={{ padding: 24 }}
+                  styles={{body:{padding: 24}}}
                 >
                   <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', top: -15, right: -15, opacity: 0.1 }}>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
                     borderRadius: 12,
                     overflow: 'hidden'
                   }}
-                  bodyStyle={{ padding: 24 }}
+                  styles={{body:{padding: 24}}}
                 >
                   <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', top: -15, right: -15, opacity: 0.1 }}>
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                     borderRadius: 12,
                     overflow: 'hidden'
                   }}
-                  bodyStyle={{ padding: 24 }}
+                  styles={{body:{padding: 24}}}
                 >
                   <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', top: -15, right: -15, opacity: 0.1 }}>
@@ -436,7 +436,7 @@ export default function DashboardPage() {
                 display: 'flex',
                 flexDirection: 'column'
               }}
-              bodyStyle={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column' }}
+              styles={{body:{padding: 24, flex: 1, display: 'flex', flexDirection: 'column'}}}
             >
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                 <div style={{ marginBottom: 24 }}>
